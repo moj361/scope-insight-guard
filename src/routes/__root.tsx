@@ -90,10 +90,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "میز کار عملیاتی برای بررسی محتوای مشکوک و پردازش تخلفات شناسایی شده.",
+          "میز کار عملیاتی تحلیلگران اطلاعاتی برای بررسی محتوای مشکوک، ارزیابی تخلفات و پردازش صف اقدامات در سکوی حاکمیت رسانه مبتنی بر هوش مصنوعی.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "میز کار تحلیلگر — سکوی حاکمیت رسانه" },
+      { name: "twitter:description", content: "میز کار عملیاتی تحلیلگران اطلاعاتی برای بررسی محتوای مشکوک، ارزیابی تخلفات و پردازش صف اقدامات در سکوی حاکمیت رسانه مبتنی بر هوش مصنوعی." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cff0deca-08c7-4adf-bc23-bb5dade2bf10/id-preview-21b83497--8a85fdf0-3139-459b-a050-772106336284.lovable.app-1784625635522.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cff0deca-08c7-4adf-bc23-bb5dade2bf10/id-preview-21b83497--8a85fdf0-3139-459b-a050-772106336284.lovable.app-1784625635522.png" },
     ],
     links: [
       {
