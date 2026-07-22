@@ -87,34 +87,42 @@ export const investigationService = {
       
       const backendData = await response.json();
       
-      // لیست سفید برای جلوگیری از کرش کردن فرانت‌اند
+      // لیست سفید برای مقادیر مجاز Severity و Priority بر اساس تایپ‌های فرانت‌اند
       const validSeverities = ["critical", "high", "medium", "low"];
       
       return backendData.map((item: any) => {
-        // استانداردسازی مقادیر برای جلوگیری از خطای cls
-        const rawSeverity = (item.risk || "medium").toLowerCase();
-        const safeSeverity = validSeverities.includes(rawSeverity) ? rawSeverity : "medium";
+        // ۱. استانداردسازی مقادیر برای جلوگیری از کرش کردن UI
+      const rawSeverity = (item.risk || "medium").toLowerCase();
+      const safeSeverity = validSeverities.includes(rawSeverity) ? rawSeverity : "medium";
 
-        const rawPriority = (item.priority || "medium").toLowerCase();
-        const safePriority = validSeverities.includes(rawPriority) ? rawPriority : "medium";
+      const rawPriority = (item.priority || "medium").toLowerCase();
+      const safePriority = validSeverities.includes(rawPriority) ? rawPriority : "medium";
 
-        return {
-          id: item.id || Math.random().toString(),
-          contentId: item.content_id || "-",
-          text: "[متن محتوا باید از جدول Content متصل شود]", // فیلد جایگزین تا زمان Join
-          violationCode: item.policy?.code || item.category || "-",
-          violationTitle: item.policy?.title || item.category || "ارزیابی سیستم",
-          detectionReason: item.reason || "بدون توضیح",
-          analyst: item.analyser || "سیستم",
-          confidence: Number(item.confidence_score) || 0,
-          riskScore: Number(item.priority_score) || 0,
-          history: Number(item.history_score) || 0,
-          severity: safeSeverity as any,
-          impact: Number(item.importance_score) || 0,
-          repetition: Number(item.frequency_score) || 0,
-          priority: safePriority as any,
-        };
-      });
+      return {
+        id: item.id || Math.random().toString(),
+        contentId: item.content?.content_id || item.content_id || "-",
+        
+        // ۲. 🌟 استخراج دقیق متن از جدول Join شده Content
+        // استفاده از علامت ?. (Optional Chaining) باعث می‌شود اگر 
+        // یک ارزیابی به هر دلیلی محتوای متصل نداشت، صفحه کرش نکند.
+        text: item.content?.body || "[بدون متن - محتوا یافت نشد]", 
+        
+        // ۳. 🌟 استخراج دقیق کد و عنوان قانون از جدول Join شده Policy
+        violationCode: item.policy?.code || item.category || "-",
+        violationTitle: item.policy?.title || item.category || "ارزیابی سیستم",
+        
+        // ۴. مپ کردن سایر فیلدهای عددی و متنی
+        detectionReason: item.reason || "بدون توضیح",
+        analyst: item.analyser || "سیستم",
+        confidence: Number(item.confidence_score) || 0,
+        riskScore: Number(item.priority_score) || 0,
+        history: Number(item.history_score) || 0,
+        severity: safeSeverity as any,
+        impact: Number(item.importance_score) || 0,
+        repetition: Number(item.frequency_score) || 0,
+        priority: safePriority as any,
+      };
+    });
       
     } catch (error) {
       console.error("Connection Error (Assessments):", error);
