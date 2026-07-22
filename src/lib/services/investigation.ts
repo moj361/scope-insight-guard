@@ -75,7 +75,43 @@ export const investigationService = {
     }
   },
   savePolicy: (p: Policy): Promise<Policy> => delay(p),
-  getContents: (): Promise<ContentItem[]> => delay(mockContents),
+  getContents: async (): Promise<ContentItem[]> => {
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/contents/");
+      
+      if (!res.ok) {
+        console.error("Backend Error (Contents):", res.status);
+        return [];
+      }
+      
+      const backendData = await res.json();
+      
+      return backendData.map((item: any) => {
+        const firstName = item.account?.first_name || "";
+        const lastName = item.account?.last_name || "";
+        const fullName = `${firstName} ${lastName}`.trim();
+
+        return {
+          id: item.id || Math.random().toString(),
+          publishedAt: item.publish_time ? new Date(item.publish_time).toLocaleString('fa-IR') : "—",
+          text: item.body || "[بدون متن]",
+          publisher: fullName || item.account?.username || "کاربر ناشناس",
+          publisherHandle: item.account?.username ? `@${item.account.username}` : "@user",
+          platform: (item.platform || "telegram").toLowerCase() as any,
+          channelType: item.telegram_chat?.chat_type || "عمومی",
+          channelTitle: item.telegram_chat?.name || "کانال پایش",
+          contentId: item.content_id || "MSG-0000",
+          link: item.url || "#",
+          suspicious: true,
+          reasons: ["keyword_match", "rule_match"],
+        };
+      });
+      
+    } catch (error) {
+      console.error("Connection Error (Contents):", error);
+      return [];
+    }
+  },
   getAssessments: async (): Promise<Assessment[]> => {
     try {
       const response = await fetch("http://localhost:8000/api/v1/assessments/");
