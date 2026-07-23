@@ -56,7 +56,7 @@ export const investigationService = {
 
         const rawStatus = String(item.status || "active").toLowerCase();
         const isEnabled = rawStatus === "active" || rawStatus === "true" || rawStatus === "1";
-        
+
         return {
           id: item.id || Math.random().toString(),
           code: item.code || "-",
@@ -168,7 +168,105 @@ export const investigationService = {
       return [];
     }
   },
-  getViolations: (): Promise<Violation[]> => delay(mockViolations),
+  getViolations: async (): Promise<Violation[]> => {
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/violations/");
+      
+      if (!res.ok) {
+        console.error("Backend Error (Violations):", res.status);
+        return [];
+      }
+      
+      const backendData = await res.json();
+      
+      // لیست سفید برای اطمینان از کرش نکردن UI
+      const validStatuses = ["pending", "in_review", "approved", "rejected"];
+      const validPriorities = ["critical", "high", "medium", "low"];
+      const validActions = ["confront", "sms", "monitor", "block", "no_action", ""];
+
+      return backendData.map((item: any) => {
+        // باز کردن آبجکت‌های Join شده با پشتیبان (Fallback)
+        const policy = item.policy || {};
+        const content = item.content || {};
+        const account = item.account || {};
+        const assessment = item.assessment || {};
+
+        // ساخت نام متخلف
+        const firstName = account.first_name || "";
+        const lastName = account.last_name || "";
+        const fullName = `${firstName} ${lastName}`.trim() || "کاربر ناشناس";
+
+        // اعتبارسنجی مقادیر مهم
+        const rawStatus = (item.action_status || "pending").toLowerCase();
+        const safeStatus = validStatuses.includes(rawStatus) ? rawStatus : "pending";
+
+        const rawPriority = (assessment.priority || "medium").toLowerCase();
+        const safePriority = validPriorities.includes(rawPriority) ? rawPriority : "medium";
+
+        const rawExpAction = (item.expert_action || "").toLowerCase();
+        const safeExpAction = validActions.includes(rawExpAction) ? rawExpAction : "";
+        
+        const rawSugAction = (policy.default_recomned || "monitor").toLowerCase();
+        const safeSugAction = validActions.includes(rawSugAction) ? rawSugAction : "monitor";
+
+        return {
+          id: item.id || Math.random().toString(),
+          priority: safePriority as any,
+          
+          // اطلاعات جدول
+          title: policy.title || "تخلف نامشخص",
+          description: content.body ? content.body.substring(0, 45) + "..." : "[بدون متن]",
+          
+          // اطلاعات هویت متخلف (برای جدول و داشبورد)
+          offender: {
+            name: fullName,
+            handle: account.username ? `@${account.username}` : "@user",
+            platform: (account.platform || "telegram").toLowerCase() as any,
+            userId: account.platform_account_id || "UID-0000",
+            historyCount: Number(assessment.history_score) || 0,
+            riskScore: Number(assessment.priority_score) || 0,
+          },
+          
+          suggestedAction: safeSugAction as any,
+          expertAction: safeExpAction as any,
+          expertComment: "", // یادداشت متنی مطابق درخواست شما خالی گذاشته شد
+          status: safeStatus as any,
+          
+          // اطلاعات تکمیلی برای داشبورد کناری (Sidebar)
+          contentId: content.content_id || "MSG-0000",
+          fullContent: content.body || "متن کامل در دسترس نیست.",
+          matchedRules: [
+            {
+              code: policy.code || "R-000",
+              title: policy.title || "قانون نامشخص",
+            }
+          ],
+          detectionReason: assessment.reason || "تطابق با قوانین سیستمی",
+          
+          // نمودارهای داشبورد کناری
+          risk: {
+            score: Number(assessment.priority_score) || 0,
+            breakdown: [
+              { label: "سابقه کاربر", value: Number(assessment.history_score) || 0 },
+              { label: "تطابق کلیدواژه", value: Number(assessment.influence_score) || 0 },
+              { label: "شدت قانون", value: Number(assessment.importance_score) || 0 },
+              { label: "میزان تکرار", value: Number(assessment.frequency_score) || 0 },
+            ]
+          },
+          priorityBreakdown: [
+            { label: "درجه اهمیت", value: Number(assessment.importance_score) || 0 },
+            { label: "درجه تاثیر", value: Number(assessment.influence_score) || 0 },
+            { label: "درجه تکرار", value: Number(assessment.frequency_score) || 0 },
+            { label: "Confidence", value: Number(assessment.confidence_score) || 0 },
+          ]
+        };
+      });
+      
+    } catch (error) {
+      console.error("Connection Error (Violations):", error);
+      return [];
+    }
+  },
   saveViolation: (v: Violation): Promise<Violation> => delay(v),
   exportExcel: (_filters: {
     from?: string;
