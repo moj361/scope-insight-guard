@@ -28,8 +28,28 @@ const delay = <T,>(v: T, ms = 120) => new Promise<T>((r) => setTimeout(() => r(v
 
 export const investigationService = {
   getCase: (): Promise<CaseInfo> => delay(mockCase),
-  getKpis: (): Promise<KpiStat[]> => delay(mockKpis),
-  getPolicyCategories: (): Promise<PolicyCategory[]> => delay(mockPolicyCategories),
+  // اتصال KPI ها به بک‌اند با پشتیبان‌گیری هوشمند
+  getKpis: async (): Promise<KpiStat[]> => {
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/dashboard/kpis");
+      if (!res.ok) return mockKpis; // اگر بک‌اند در دسترس نبود، دیتای موک را لود کن
+      return await res.json();
+    } catch (error) {
+      console.error("Dashboard KPI Error:", error);
+      return mockKpis;
+    }
+  },
+  // اتصال نمودار دسته‌بندی‌ها به بک‌اند
+  getPolicyCategories: async (): Promise<PolicyCategory[]> => {
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/dashboard/policy-categories");
+      if (!res.ok) return mockPolicyCategories; 
+      return await res.json();
+    } catch (error) {
+      console.error("Dashboard Categories Error:", error);
+      return mockPolicyCategories;
+    }
+  },
   getPolicies: async (): Promise<Policy[]> => {
     try {
       const response = await fetch("http://localhost:8000/api/v1/policies/");
@@ -274,3 +294,4 @@ export const investigationService = {
     action?: string;
   }): Promise<{ url: string }> => delay({ url: "#" }, 400),
 };
+  
