@@ -54,6 +54,9 @@ export const investigationService = {
         const rawAction = (item.default_recomned || "").toLowerCase();
         const safeAction = validActions.includes(rawAction) ? rawAction : "monitor";
 
+        const rawStatus = String(item.status || "active").toLowerCase();
+        const isEnabled = rawStatus === "active" || rawStatus === "true" || rawStatus === "1";
+        
         return {
           id: item.id || Math.random().toString(),
           code: item.code || "-",
@@ -65,7 +68,7 @@ export const investigationService = {
             ? item.keywords.split(",").map((k: string) => k.trim()).filter(Boolean) 
             : [], 
           prompt: item.prompt || "",
-          enabled: true,
+          enabled: isEnabled,
         };
       });
       
