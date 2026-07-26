@@ -31,7 +31,7 @@ export const investigationService = {
   // اتصال KPI ها به بک‌اند با پشتیبان‌گیری هوشمند
   getKpis: async (): Promise<KpiStat[]> => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/dashboard/kpis");
+      const res = await fetch("http://141.11.107.226:8000/api/v1/dashboard/kpis");
       if (!res.ok) return mockKpis; // اگر بک‌اند در دسترس نبود، دیتای موک را لود کن
       return await res.json();
     } catch (error) {
@@ -42,7 +42,7 @@ export const investigationService = {
   // اتصال نمودار دسته‌بندی‌ها به بک‌اند
   getPolicyCategories: async (): Promise<PolicyCategory[]> => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/dashboard/policy-categories");
+      const res = await fetch("http://141.11.107.226:8000/api/v1/dashboard/policy-categories");
       if (!res.ok) return mockPolicyCategories; 
       return await res.json();
     } catch (error) {
@@ -52,7 +52,7 @@ export const investigationService = {
   },
   getPolicies: async (): Promise<Policy[]> => {
     try {
-      const response = await fetch("http://localhost:8000/api/v1/policies/");
+      const response = await fetch("http://141.11.107.226:8000/api/v1/policies/");
       
       if (!response.ok) {
         console.error("Backend Error:", response.status);
@@ -100,7 +100,7 @@ export const investigationService = {
   savePolicy: (p: Policy): Promise<Policy> => delay(p),
   getContents: async (): Promise<ContentItem[]> => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/contents/");
+      const res = await fetch("http://141.11.107.226:8000/api/v1/contents/");
       
       if (!res.ok) {
         console.error("Backend Error (Contents):", res.status);
@@ -137,7 +137,7 @@ export const investigationService = {
   },
   getAssessments: async (): Promise<Assessment[]> => {
     try {
-      const response = await fetch("http://localhost:8000/api/v1/assessments/");
+      const response = await fetch("http://141.11.107.226:8000/api/v1/assessments/");
       
       if (!response.ok) {
         console.error("Backend Error:", response.status);
@@ -190,7 +190,7 @@ export const investigationService = {
   },
   getViolations: async (): Promise<Violation[]> => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/violations/");
+      const res = await fetch("http://141.11.107.226:8000/api/v1/violations/");
       
       if (!res.ok) {
         console.error("Backend Error (Violations):", res.status);
