@@ -4,7 +4,9 @@ import { AlertCircle, Eye, EyeOff, Loader2, LogIn, ShieldCheck } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authService, AuthError } from "@/lib/services/auth";
+import { AuthError } from "@/lib/services/auth";
+import { useAuth } from "@/lib/auth-context";
+import { RedirectIfAuthenticated } from "@/components/auth/RequireAuth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -24,10 +26,19 @@ export const Route = createFileRoute("/login")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: LoginPage,
+  component: LoginRoute,
 });
 
+function LoginRoute() {
+  return (
+    <RedirectIfAuthenticated>
+      <LoginPage />
+    </RedirectIfAuthenticated>
+  );
+}
+
 function LoginPage() {
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -45,8 +56,8 @@ function LoginPage() {
 
     setLoading(true);
     try {
-      // اتصال به بک‌اند در authService.login انجام می‌شود.
-      await authService.login({ username: username.trim(), password });
+      await login(username.trim(), password);
+      // هدایت پس از ورود توسط RedirectIfAuthenticated انجام می‌شود.
     } catch (err) {
       setError(
         err instanceof AuthError

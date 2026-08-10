@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -10,6 +10,7 @@ import {
   Gavel,
   Radio,
   ScrollText,
+  LogOut,
   ShieldAlert,
   SlidersHorizontal,
   Zap,
@@ -29,12 +30,34 @@ import { AssessmentTable } from "@/components/workspace/sections/AssessmentTable
 import { ViolationQueue } from "@/components/workspace/sections/ViolationQueue";
 import { ExportPanel } from "@/components/workspace/sections/ExportPanel";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { RequireAuth } from "@/components/auth/RequireAuth";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/")({
-  component: WorkspacePage,
+  component: WorkspaceRoute,
 });
 
+function WorkspaceRoute() {
+  return (
+    <RequireAuth>
+      <WorkspacePage />
+    </RequireAuth>
+  );
+}
+
 function TopBar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const displayName =
+    (user?.full_name as string | undefined) || (user?.username as string | undefined) || "تحلیلگر";
+  const initials = displayName.trim().slice(0, 2);
+
+  function handleLogout() {
+    logout();
+    void navigate({ to: "/login", replace: true });
+  }
+
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-panel-header/95 backdrop-blur">
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-4 py-2.5">
@@ -60,9 +83,21 @@ function TopBar() {
             <Activity className="size-3" />
             <span className="num-fa">۲۱۶</span> در صف
           </Badge>
-          <div className="flex size-8 items-center justify-center rounded-full bg-muted text-[11px] font-semibold text-foreground">
-            م.ه
+          <div
+            className="flex size-8 items-center justify-center rounded-full bg-muted text-[11px] font-semibold text-foreground"
+            title={displayName}
+          >
+            {initials}
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="h-8 gap-1.5 px-2 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="size-3.5" />
+            خروج
+          </Button>
         </div>
       </div>
     </header>
