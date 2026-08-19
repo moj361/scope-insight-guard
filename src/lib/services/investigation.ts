@@ -137,7 +137,7 @@ export const investigationService = {
         return {
           id: item.id || Math.random().toString(),
           // به جای تبدیل به fa-IR، دیتای خام را پاس می‌دهیم
-publishedAt: item.publish_time ? item.publish_time : new Date().toISOString(),
+          publishedAt: item.publish_time ? item.publish_time : new Date().toISOString(),
           text: item.body || "[بدون متن]",
           publisher: fullName || item.account?.username || "کاربر ناشناس",
           publisherHandle: item.account?.username ? `@${item.account.username}` : "@user",
@@ -179,6 +179,8 @@ publishedAt: item.publish_time ? item.publish_time : new Date().toISOString(),
       const pScore = Number(item.priority_score) || 0;
       let dynamicPriority = "low";
 
+      const isClean = item.status === "clean" || !item.policy;
+
       if (pScore >= 80) {
           dynamicPriority = "critical";
       } else if (pScore >= 60) {
@@ -197,8 +199,8 @@ publishedAt: item.publish_time ? item.publish_time : new Date().toISOString(),
         text: item.content?.body || "[بدون متن - محتوا یافت نشد]", 
         
         // ۳. 🌟 استخراج دقیق کد و عنوان قانون از جدول Join شده Policy
-        violationCode: item.policy?.code || item.category || "-",
-        violationTitle: item.policy?.title || item.category || "ارزیابی سیستم",
+        violationCode: isClean ? "-" : (item.policy?.code || item.category || "-"),
+        violationTitle: isClean ? "تایید شده (بدون تخلف)" : (item.policy?.title || item.category || "ارزیابی سیستم"),
         
         // ۴. مپ کردن سایر فیلدهای عددی و متنی
         detectionReason: item.reason || "بدون توضیح",
