@@ -1,0 +1,196 @@
+.
+├── AGENTS.md
+├── bunfig.toml
+├── bun.lock
+├── components.json
+├── .env
+├── eslint.config.js
+├── .gitignore
+├── .lovable
+│   └── project.json
+├── .output
+│   ├── nitro.json
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public
+│   │   ├── assets
+│   │   │   ├── index-DU3-Llwx.js
+│   │   │   ├── login-D-3WJ-Hy.js
+│   │   │   ├── RequireAuth-CxTwh9fc.js
+│   │   │   ├── routes-RMSpnkU4.js
+│   │   │   └── styles-6rKFHcPy.css
+│   │   ├── favicon.ico
+│   │   └── _headers
+│   └── server
+│       ├── _chunks
+│       │   └── ssr-renderer.mjs
+│       ├── index.mjs
+│       ├── _libs
+│       │   ├── class-variance-authority+clsx.mjs
+│       │   ├── d3-array.mjs
+│       │   ├── d3-color.mjs
+│       │   ├── d3-format.mjs
+│       │   ├── d3-interpolate.mjs
+│       │   ├── d3-path.mjs
+│       │   ├── d3-scale+[...].mjs
+│       │   ├── d3-shape.mjs
+│       │   ├── decimal.js-light.mjs
+│       │   ├── eventemitter3.mjs
+│       │   ├── fast-equals.mjs
+│       │   ├── @floating-ui
+│       │   │   ├── core+[...].mjs
+│       │   │   ├── dom+[...].mjs
+│       │   │   └── react-dom+[...].mjs
+│       │   ├── h3+rou3+srvx.mjs
+│       │   ├── h3-v2+srvx.mjs
+│       │   ├── hookable.mjs
+│       │   ├── lodash.mjs
+│       │   ├── lucide-react.mjs
+│       │   ├── prop-types.mjs
+│       │   ├── @radix-ui
+│       │   │   ├── react-arrow+[...].mjs
+│       │   │   ├── react-collection+[...].mjs
+│       │   │   ├── react-dialog+[...].mjs
+│       │   │   ├── react-label+[...].mjs
+│       │   │   ├── react-popper+[...].mjs
+│       │   │   └── react-select+[...].mjs
+│       │   ├── radix-ui__number.mjs
+│       │   ├── radix-ui__primitive.mjs
+│       │   ├── radix-ui__react-direction.mjs
+│       │   ├── radix-ui__react-primitive.mjs
+│       │   ├── radix-ui__react-separator.mjs
+│       │   ├── radix-ui__react-slot.mjs
+│       │   ├── radix-ui__react-switch.mjs
+│       │   ├── radix-ui__react-tooltip.mjs
+│       │   ├── react-is.mjs
+│       │   ├── react-smooth.mjs
+│       │   ├── recharts+[...].mjs
+│       │   ├── sonner.mjs
+│       │   ├── tailwind-merge.mjs
+│       │   ├── @tanstack
+│       │   │   ├── react-router+[...].mjs
+│       │   │   └── router-core+[...].mjs
+│       │   ├── tanstack__history.mjs
+│       │   ├── tanstack__query-core.mjs
+│       │   └── tanstack__react-query.mjs
+│       ├── _runtime.mjs
+│       ├── _ssr
+│       │   ├── auth-context-CsorbFWX.mjs
+│       │   ├── createStart-Dt05N14y.mjs
+│       │   ├── empty-plugin-adapters-D9UWiqvJ.mjs
+│       │   ├── login-BlZ4DdgC.mjs
+│       │   ├── RequireAuth-D7SIHUai.mjs
+│       │   ├── router-Js8q_zCt.mjs
+│       │   ├── routes-WMC7IWx_.mjs
+│       │   ├── server-BDEOUzHD.mjs
+│       │   ├── ssr.mjs
+│       │   ├── start-Ok9K6Nid.mjs
+│       │   └── tooltip-2XCf0H3F.mjs
+│       ├── _tanstack-start-manifest_v-nZZy9Cyi.mjs
+│       └── wrangler.json
+├── package.json
+├── .prettierignore
+├── .prettierrc
+├── public
+│   └── favicon.ico
+├── README.md
+├── src
+│   ├── components
+│   │   ├── auth
+│   │   │   └── RequireAuth.tsx
+│   │   ├── ui
+│   │   │   ├── accordion.tsx
+│   │   │   ├── alert-dialog.tsx
+│   │   │   ├── alert.tsx
+│   │   │   ├── aspect-ratio.tsx
+│   │   │   ├── avatar.tsx
+│   │   │   ├── badge.tsx
+│   │   │   ├── breadcrumb.tsx
+│   │   │   ├── button.tsx
+│   │   │   ├── calendar.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── carousel.tsx
+│   │   │   ├── chart.tsx
+│   │   │   ├── checkbox.tsx
+│   │   │   ├── collapsible.tsx
+│   │   │   ├── command.tsx
+│   │   │   ├── context-menu.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── drawer.tsx
+│   │   │   ├── dropdown-menu.tsx
+│   │   │   ├── form.tsx
+│   │   │   ├── hover-card.tsx
+│   │   │   ├── input-otp.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   ├── menubar.tsx
+│   │   │   ├── navigation-menu.tsx
+│   │   │   ├── pagination.tsx
+│   │   │   ├── popover.tsx
+│   │   │   ├── progress.tsx
+│   │   │   ├── radio-group.tsx
+│   │   │   ├── resizable.tsx
+│   │   │   ├── scroll-area.tsx
+│   │   │   ├── select.tsx
+│   │   │   ├── separator.tsx
+│   │   │   ├── sheet.tsx
+│   │   │   ├── sidebar.tsx
+│   │   │   ├── skeleton.tsx
+│   │   │   ├── slider.tsx
+│   │   │   ├── sonner.tsx
+│   │   │   ├── switch.tsx
+│   │   │   ├── table.tsx
+│   │   │   ├── tabs.tsx
+│   │   │   ├── textarea.tsx
+│   │   │   ├── toggle-group.tsx
+│   │   │   ├── toggle.tsx
+│   │   │   └── tooltip.tsx
+│   │   └── workspace
+│   │       ├── badges.tsx
+│   │       ├── CollapsibleSection.tsx
+│   │       ├── DataTable.tsx
+│   │       ├── sections
+│   │       │   ├── AssessmentTable.tsx
+│   │       │   ├── CaseInfoBar.tsx
+│   │       │   ├── ExportPanel.tsx
+│   │       │   ├── FiltersBar.tsx
+│   │       │   ├── LiveContent.tsx
+│   │       │   ├── OfflineImport.tsx
+│   │       │   ├── PolicyManagement.tsx
+│   │       │   ├── Statistics.tsx
+│   │       │   └── ViolationQueue.tsx
+│   │       └── ViolationDrawer.tsx
+│   ├── hooks
+│   │   └── use-mobile.tsx
+│   ├── lib
+│   │   ├── auth-context.tsx
+│   │   ├── config.ts
+│   │   ├── error-capture.ts
+│   │   ├── error-page.ts
+│   │   ├── lovable-error-reporting.ts
+│   │   ├── mock
+│   │   │   ├── data.ts
+│   │   │   └── types.ts
+│   │   ├── services
+│   │   │   ├── auth.ts
+│   │   │   └── investigation.ts
+│   │   └── utils.ts
+│   ├── router.tsx
+│   ├── routes
+│   │   ├── index.tsx
+│   │   ├── login.tsx
+│   │   ├── README.md
+│   │   └── __root.tsx
+│   ├── routeTree.gen.ts
+│   ├── server.ts
+│   ├── start.ts
+│   └── styles.css
+├── .tanstack
+│   └── tmp
+├── tsconfig.json
+├── vite.config.ts
+└── .wrangler
+    └── deploy
+        └── config.json
+
+28 directories, 166 files

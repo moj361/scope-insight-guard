@@ -92,6 +92,7 @@ export interface Violation {
   priority: Priority;
   title: string;
   description: string;
+  previous_violations_count?: number;
   offender: {
     name: string;
     handle: string;

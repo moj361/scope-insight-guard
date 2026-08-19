@@ -239,15 +239,16 @@ export const investigationService = {
           description: content.body ? content.body.substring(0, 45) + "..." : "[بدون متن]",
           
           // اطلاعات هویت متخلف (برای جدول و داشبورد)
+          // اطلاعات هویت متخلف (برای جدول و داشبورد)
           offender: {
             name: fullName,
             handle: account.username ? `@${account.username}` : "@user",
             platform: (account.platform || "telegram").toLowerCase() as any,
             userId: account.platform_account_id || "UID-0000",
-            historyCount: Number(assessment.history_score) || 0,
+            historyCount: Number(assessment.previous_violations_count) || 0,
             riskScore: Number(assessment.priority_score) || 0,
           },
-          
+
           suggestedAction: safeSugAction as any,
           expertAction: safeExpAction as any,
           expertComment: "", // یادداشت متنی مطابق درخواست شما خالی گذاشته شد
@@ -265,9 +266,11 @@ export const investigationService = {
           detectionReason: assessment.reason || "تطابق با قوانین سیستمی",
           
           // نمودارهای داشبورد کناری
+          // نمودارهای داشبورد کناری
           risk: {
             score: Number(assessment.priority_score) || 0,
             breakdown: [
+              // 👇 اینجا دست نمی‌زنیم چون می‌خواهیم در نوار پیشرفت همان نمره (مثلاً 20) نشان داده شود
               { label: "سابقه کاربر", value: Number(assessment.history_score) || 0 },
               { label: "تطابق کلیدواژه", value: Number(assessment.influence_score) || 0 },
               { label: "شدت قانون", value: Number(assessment.importance_score) || 0 },
@@ -279,7 +282,10 @@ export const investigationService = {
             { label: "درجه تاثیر", value: Number(assessment.influence_score) || 0 },
             { label: "درجه تکرار", value: Number(assessment.frequency_score) || 0 },
             { label: "Confidence", value: Number(assessment.confidence_score) || 0 },
-          ]
+          ],
+          
+          // 👇 این خط را دقیقاً قبل از پایان آبجکت اضافه کنید تا به Drawer برسد
+          previous_violations_count: Number(assessment.previous_violations_count) || 0,
         };
       });
       

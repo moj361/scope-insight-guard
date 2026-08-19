@@ -108,7 +108,7 @@ export function ViolationDrawer({
               <Block icon={<AlertTriangle className="size-3.5" />} title="سوابق تخلفات">
                 <div className="flex items-baseline gap-2">
                   <span className="text-2xl font-bold text-critical num-fa">
-                    {violation.offender.historyCount.toLocaleString("fa-IR")}
+                    {violation.previous_violations_count?.toLocaleString("fa-IR")}
                   </span>
                   <span className="text-[11px] text-muted-foreground">
                     تخلف در ۹۰ روز گذشته
