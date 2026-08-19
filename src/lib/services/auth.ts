@@ -112,10 +112,16 @@ export const authService = {
   login: async ({ username, password }: LoginCredentials): Promise<LoginResponse> => {
     let res: Response;
     try {
+      const formData = new URLSearchParams();
+      formData.append("username", username);
+      formData.append("password", password);
+
       res = await fetch(apiUrl(AUTH_LOGIN_PATH), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData.toString(),
       });
     } catch {
       throw new AuthError("ارتباط با سرور برقرار نشد.");

@@ -19,12 +19,54 @@ export function ExportPanel() {
   const [loading, setLoading] = useState(false);
 
   async function handleExport() {
+    if (!from || !to) {
+      toast.error("لطفاً تاریخ شروع و پایان را انتخاب کنید.");
+      return;
+    }
+
+    if (from > to) {
+      toast.error("تاریخ شروع نمی‌تواند بعد از تاریخ پایان باشد.");
+      return;
+    }
+
     setLoading(true);
-    await investigationService.exportExcel({ from, to, action });
-    setLoading(false);
-    toast.success("فایل خروجی آماده شد", {
-      description: "دانلود به‌طور خودکار آغاز خواهد شد.",
-    });
+
+    try {
+      const blob = await investigationService.exportExcel({
+        from,
+        to,
+        action: action === "all" ? undefined : action,
+      });
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `violations_${from}_${to}.xlsx`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success("فایل خروجی آماده شد", {
+        description: "دانلود فایل Excel آغاز شد.",
+      });
+    } catch (error) {
+      console.error("Export Excel Error:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "دریافت فایل Excel ناموفق بود.";
+
+      toast.error("خطا در دریافت فایل", {
+        description: message,
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -33,6 +75,7 @@ export function ExportPanel() {
         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
           از تاریخ
         </span>
+
         <Input
           type="date"
           value={from}
@@ -40,10 +83,12 @@ export function ExportPanel() {
           className="h-8 text-[12px]"
         />
       </label>
+
       <label className="flex flex-col gap-1">
         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
           تا تاریخ
         </span>
+
         <Input
           type="date"
           value={to}
@@ -51,14 +96,17 @@ export function ExportPanel() {
           className="h-8 text-[12px]"
         />
       </label>
+
       <label className="flex flex-col gap-1">
         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
           نوع اقدام
         </span>
+
         <Select value={action} onValueChange={setAction}>
           <SelectTrigger className="h-8 text-[12px]">
             <SelectValue />
           </SelectTrigger>
+
           <SelectContent>
             <SelectItem value="all">همه</SelectItem>
             <SelectItem value="confront">برخورد</SelectItem>
@@ -68,6 +116,7 @@ export function ExportPanel() {
           </SelectContent>
         </Select>
       </label>
+
       <div className="flex items-end">
         <Button
           className="h-8 w-full gap-2 md:w-auto"
@@ -75,6 +124,7 @@ export function ExportPanel() {
           disabled={loading}
         >
           <FileSpreadsheet className="size-4" />
+
           {loading ? "در حال آماده‌سازی…" : "خروجی Excel"}
         </Button>
       </div>

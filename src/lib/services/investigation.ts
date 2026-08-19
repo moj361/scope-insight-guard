@@ -203,7 +203,7 @@ export const investigationService = {
       // لیست سفید برای اطمینان از کرش نکردن UI
       const validStatuses = ["pending", "in_review", "approved", "rejected"];
       const validPriorities = ["critical", "high", "medium", "low"];
-      const validActions = ["confront", "sms", "monitor", "block", "no_action", ""];
+      const validActions = ["confront", "sms", "monitor", "block", "no_action", "action1"];
 
       return backendData.map((item: any) => {
         // باز کردن آبجکت‌های Join شده با پشتیبان (Fallback)
@@ -289,10 +289,51 @@ export const investigationService = {
     }
   },
   saveViolation: (v: Violation): Promise<Violation> => delay(v),
-  exportExcel: (_filters: {
-    from?: string;
-    to?: string;
-    action?: string;
-  }): Promise<{ url: string }> => delay({ url: "#" }, 400),
+  exportExcel: async (filters: {
+  from?: string;
+  to?: string;
+  action?: string;
+}): Promise<Blob> => {
+  if (!filters.from || !filters.to) {
+    throw new Error("تاریخ شروع و تاریخ پایان الزامی است.");
+  }
+
+  const body: {
+    from_date: string;
+    to_date: string;
+    expert_action?: string;
+  } = {
+    from_date: filters.from,
+    to_date: filters.to,
+  };
+
+  // اگر "همه" انتخاب نشده باشد، فیلتر expert_action ارسال می‌شود
+  if (filters.action && filters.action !== "all") {
+    body.expert_action = filters.action;
+  }
+
+  const response = await authFetch("/api/v1/violations/export", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    let message = "خطا در دریافت فایل Excel";
+
+    try {
+      const errorData = await response.json();
+      message = errorData.detail || message;
+    } catch {
+      // اگر Response JSON نبود
+    }
+
+    throw new Error(message);
+  }
+
+  return await response.blob();
+},
 };
   
