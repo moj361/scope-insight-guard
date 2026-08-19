@@ -255,9 +255,8 @@ export const investigationService = {
           
           // اطلاعات جدول
           title: policy.title || "تخلف نامشخص",
-          description: content.body ? content.body.substring(0, 45) + "..." : "[بدون متن]",
+          description: assessment.reason ? assessment.reason.substring(0, 45) + "..." : "[بدون دلیل مشخص]",
           
-          // اطلاعات هویت متخلف (برای جدول و داشبورد)
           // اطلاعات هویت متخلف (برای جدول و داشبورد)
           offender: {
             name: fullName,

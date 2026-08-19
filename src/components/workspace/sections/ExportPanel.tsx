@@ -80,7 +80,7 @@ export function ExportPanel() {
           type="date"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          className="h-8 text-[12px]"
+          className="h-8 text-[12px] dark:[color-scheme:dark]"
         />
       </label>
 
@@ -93,7 +93,7 @@ export function ExportPanel() {
           type="date"
           value={to}
           onChange={(e) => setTo(e.target.value)}
-          className="h-8 text-[12px]"
+          className="h-8 text-[12px] dark:[color-scheme:dark]"
         />
       </label>
 

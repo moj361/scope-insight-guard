@@ -10,24 +10,24 @@ import type {
 } from "./types";
 
 export const caseInfo: CaseInfo = {
-  title: "فراخوان و دعوت به اغتشاش",
+  title: "پرونده فراخوان",
   caseNumber: "312413241",
   status: "active",
-  openedAt: "۱۴۰۳/۰۹/۱۲ - ۰۸:۳۲",
+  openedAt: "۱۴۰۴/۰۴/۱۲ - ۰۸:۳۲",
   analyst: "سرکار خانم موسوی",
 };
 
 export const kpis: KpiStat[] = [
-  { key: "users_total", label: "تعداد کل کاربران", value: 128432, tone: "neutral", delta: 3.2 },
-  { key: "users_watched", label: "کاربران تحت پایش", value: 4127, tone: "info", delta: 1.4 },
-  { key: "groups_total", label: "تعداد کل گروه‌ها", value: 8_612, tone: "neutral" },
-  { key: "groups_watched", label: "گروه‌های تحت پایش", value: 312, tone: "info" },
-  { key: "critical", label: "تخلفات بحرانی", value: 47, tone: "critical", delta: 12 },
-  { key: "pending", label: "در انتظار بررسی", value: 216, tone: "warning" },
-  { key: "today", label: "تخلفات امروز", value: 389, tone: "neutral", delta: -4.1 },
-  { key: "avg_review", label: "میانگین زمان بررسی", value: 142, tone: "info", hint: "ثانیه" },
-  { key: "approved", label: "پیشنهادهای تایید شده", value: 1284, tone: "success" },
-  { key: "rejected", label: "پیشنهادهای رد شده", value: 173, tone: "warning" },
+  { key: "monitored_groups", label: "گروه‌های تحت پایش ", value: 128432, tone: "info", delta: 3.2 },
+  { key: "content_checked", label:  "محتوای بررسی‌شده ", value: 4127, tone: "info", delta: 1.4 },
+  { key: "suspicious_content", label:  "محتوای مشکوک", value: 8_612, tone: "info" },
+  { key: "analyzed_content", label:  "محتوای ارزیابی‌شده", value: 312, tone: "info" },
+  { key: "content_waiting_for_anlaysis", label: "صف ارزیابی", value: 47, tone: "warning", delta: 12 },
+  { key: "detected_violation", label: "تخلفات شناسایی‌شده", value: 216, tone: "neutral" },
+  { key: "critical_violation", label: "تخلفات بحرانی", value: 389, tone: "critical", delta: -4.1 },
+  { key: "confirmed_actions", label: "اقدامات تأییدشده", value: 142, tone: "neutral" },
+  { key: "no_actions", label: "پیشنهادهای تایید شده", value: 1284, tone: "success" },
+  { key: "success_recomend_actions", label: "تشخیص صحیح سیستم", value: 173, tone: "success", hint: "%" },
 ];
 
 export const policyCategories: PolicyCategory[] = [

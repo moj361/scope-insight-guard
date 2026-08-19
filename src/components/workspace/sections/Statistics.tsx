@@ -92,6 +92,13 @@ export function Statistics() {
                     border: "1px solid var(--color-border)",
                     borderRadius: 6,
                     fontSize: 11,
+                    color: "var(--color-foreground)",
+                  }}
+                  labelStyle={{
+                    color: "var(--color-foreground)",
+                  }}
+                  itemStyle={{
+                    color: "var(--color-foreground)",
                   }}
                 />
                 <Legend
