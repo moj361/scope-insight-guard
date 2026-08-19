@@ -12,15 +12,24 @@ export function LiveContent() {
     queryFn: investigationService.getContents,
   });
 
-  const sorted = [...data].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  // بک‌اند دیتا را بر اساس زمان مرتب کرده است، پس فرانت‌اند نباید در آن دخالت کند!
+  const sorted = [...data].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
 
   const columns: Column<ContentItem>[] = [
     {
       key: "publishedAt",
       header: "زمان انتشار",
-      accessor: (r) => r.publishedAt,
+      // 👈 برای مرتب‌سازی، زمان خام را به یک عدد (تایم‌استمپ) تبدیل می‌کنیم
+      accessor: (r) => new Date(r.publishedAt).getTime(),
       sortable: true,
-      cell: (r) => <span className="num-fa font-mono text-[11px]">{r.publishedAt}</span>,
+      // 👈 برای نمایش به کاربر، آن را به تاریخ شمسی تبدیل می‌کنیم
+      cell: (r) => (
+        <span className="num-fa font-mono text-[11px]">
+          {new Date(r.publishedAt).toLocaleString("fa-IR")}
+        </span>
+      ),
       width: "120px",
     },
     {

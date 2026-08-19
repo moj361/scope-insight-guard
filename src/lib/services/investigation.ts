@@ -136,7 +136,8 @@ export const investigationService = {
 
         return {
           id: item.id || Math.random().toString(),
-          publishedAt: item.publish_time ? new Date(item.publish_time).toLocaleString('fa-IR') : "—",
+          // به جای تبدیل به fa-IR، دیتای خام را پاس می‌دهیم
+publishedAt: item.publish_time ? item.publish_time : new Date().toISOString(),
           text: item.body || "[بدون متن]",
           publisher: fullName || item.account?.username || "کاربر ناشناس",
           publisherHandle: item.account?.username ? `@${item.account.username}` : "@user",
@@ -174,8 +175,17 @@ export const investigationService = {
       const rawSeverity = (item.risk || "medium").toLowerCase();
       const safeSeverity = validSeverities.includes(rawSeverity) ? rawSeverity : "medium";
 
-      const rawPriority = (item.priority || "medium").toLowerCase();
-      const safePriority = validSeverities.includes(rawPriority) ? rawPriority : "medium";
+      // محاسبه پویا سطح اولویت بر اساس priority_score
+      const pScore = Number(item.priority_score) || 0;
+      let dynamicPriority = "low";
+
+      if (pScore >= 80) {
+          dynamicPriority = "critical";
+      } else if (pScore >= 60) {
+          dynamicPriority = "high";
+      } else if (pScore >= 40) {
+          dynamicPriority = "medium";
+      }
 
       return {
         id: item.id || Math.random().toString(),
@@ -195,11 +205,11 @@ export const investigationService = {
         analyst: item.analyser || "سیستم",
         confidence: Number(item.confidence_score) || 0,
         riskScore: Number(item.priority_score) || 0,
-        history: Number(item.history_score) || 0,
+        history: Number(item.previous_violations_count) || 0,
         severity: safeSeverity as any,
         impact: Number(item.importance_score) || 0,
         repetition: Number(item.frequency_score) || 0,
-        priority: safePriority as any,
+        priority: dynamicPriority as any,
       };
     });
       
@@ -240,8 +250,17 @@ export const investigationService = {
         const rawStatus = (item.action_status || "pending").toLowerCase();
         const safeStatus = validStatuses.includes(rawStatus) ? rawStatus : "pending";
 
-        const rawPriority = (assessment.priority || "medium").toLowerCase();
-        const safePriority = validPriorities.includes(rawPriority) ? rawPriority : "medium";
+        // محاسبه پویا سطح اولویت بر اساس priority_score
+        const pScore = Number(item.priority_score) || 0;
+        let dynamicPriority = "low";
+
+        if (pScore >= 80) {
+            dynamicPriority = "critical";
+        } else if (pScore >= 60) {
+            dynamicPriority = "high";
+        } else if (pScore >= 40) {
+            dynamicPriority = "medium";
+        }
 
         const rawExpAction = (item.expert_action || "").toLowerCase();
         const safeExpAction = validActions.includes(rawExpAction) ? rawExpAction : "";
@@ -251,7 +270,7 @@ export const investigationService = {
 
         return {
           id: item.id || Math.random().toString(),
-          priority: safePriority as any,
+          priority: dynamicPriority as any,
           
           // اطلاعات جدول
           title: policy.title || "تخلف نامشخص",
