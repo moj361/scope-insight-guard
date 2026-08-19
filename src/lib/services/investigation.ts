@@ -98,7 +98,26 @@ export const investigationService = {
       return []; 
     }
   },
-  savePolicy: (p: Policy): Promise<Policy> => delay(p),
+  savePolicy: async (p: Policy): Promise<Policy> => {
+    // تبدیل ساختار فرانت‌اند به دیتابیس
+    const payload = {
+      title: p.title,
+      severity: p.severity,
+      default_recomned: p.defaultAction,
+      keywords: p.keywords.join(","), // تبدیل آرایه به رشته
+      prompt: p.prompt,
+      status: p.enabled ? "active" : "inactive"
+    };
+
+    const res = await authFetch(`/api/v1/policies/${p.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error("خطا در ذخیره قانون");
+    return p; // برگرداندن خود آبجکت برای آپدیت شدن UI
+  },
   getContents: async (): Promise<ContentItem[]> => {
     try {
       const res = await authFetch("/api/v1/contents/");
@@ -251,7 +270,7 @@ export const investigationService = {
 
           suggestedAction: safeSugAction as any,
           expertAction: safeExpAction as any,
-          expertComment: "", // یادداشت متنی مطابق درخواست شما خالی گذاشته شد
+          expertComment: item.expert_comment || "",
           status: safeStatus as any,
           
           // اطلاعات تکمیلی برای داشبورد کناری (Sidebar)
@@ -294,7 +313,23 @@ export const investigationService = {
       return [];
     }
   },
-  saveViolation: (v: Violation): Promise<Violation> => delay(v),
+  saveViolation: async (v: Violation): Promise<Violation> => {
+    // تبدیل ساختار فرانت‌اند به دیتابیس
+    const payload = {
+      expert_action: v.expertAction,
+      expert_comment: v.expertComment,
+      action_status: v.status,
+    };
+
+    const res = await authFetch(`/api/v1/violations/${v.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error("خطا در ذخیره تخلف");
+    return v;
+  },
   exportExcel: async (filters: {
   from?: string;
   to?: string;

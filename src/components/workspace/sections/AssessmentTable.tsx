@@ -43,7 +43,7 @@ export function AssessmentTable() {
       key: "text",
       header: "متن محتوا",
       cell: (r) => (
-        <span className="line-clamp-2 max-w-[280px] text-[12px]">{r.text}</span>
+        <span className="line-clamp-4 max-w-[400px] text-[12px]">{r.text}</span>
       ),
     },
     {

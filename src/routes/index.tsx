@@ -125,6 +125,7 @@ function WorkspacePage() {
           icon={<SlidersHorizontal className="size-4" />}
           accent="info"
           dense
+          defaultOpen={false}
         >
           <FiltersBar value={filters} onChange={setFilters} onRefresh={refreshAll} />
         </CollapsibleSection>
@@ -154,6 +155,7 @@ function WorkspacePage() {
           title="مدیریت قوانین"
           subtitle="Policy Management"
           icon={<ScrollText className="size-4" />}
+          defaultOpen={false}
         >
           <PolicyManagement />
         </CollapsibleSection>
@@ -164,6 +166,7 @@ function WorkspacePage() {
           subtitle="آخرین محتواهای منتشر شده — مرتب بر اساس زمان انتشار"
           icon={<Radio className="size-4" />}
           accent="info"
+          defaultOpen={false}
         >
           <LiveContent />
         </CollapsibleSection>
@@ -173,6 +176,7 @@ function WorkspacePage() {
           title="نتایج ارزیابی"
           subtitle="Assessment Results"
           icon={<ClipboardList className="size-4" />}
+          defaultOpen={false}
         >
           <AssessmentTable />
         </CollapsibleSection>
@@ -188,6 +192,7 @@ function WorkspacePage() {
               <Zap className="size-3" /> اولویت بالا
             </Badge>
           }
+          defaultOpen={false}
         >
           <ViolationQueue />
         </CollapsibleSection>
