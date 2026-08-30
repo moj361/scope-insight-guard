@@ -198,9 +198,14 @@ export const investigationService = {
         // یک ارزیابی به هر دلیلی محتوای متصل نداشت، صفحه کرش نکند.
         text: item.content?.body || "[بدون متن - محتوا یافت نشد]", 
         
-        // ۳. 🌟 استخراج دقیق کد و عنوان قانون از جدول Join شده Policy
-        violationCode: isClean ? "-" : (item.policy?.code || item.category || "-"),
-        violationTitle: isClean ? "تایید شده (بدون تخلف)" : (item.policy?.title || item.category || "ارزیابی سیستم"),
+        // ۳. 🌟 پشتیبانی از نمایش چند کد و عنوان برای تخلفات هم‌زمان
+        violationCode: isClean ? "-" : (item.matchedRules?.length > 0 
+          ? item.matchedRules.map((m: any) => m.code).join(", ") 
+          : (item.policy?.code || item.category || "-")),
+          
+        violationTitle: isClean ? "تایید شده (بدون تخلف)" : (item.matchedRules?.length > 0 
+          ? item.matchedRules.map((m: any) => m.title).join(" | ") 
+          : (item.policy?.title || item.category || "ارزیابی سیستم")),
         
         // ۴. مپ کردن سایر فیلدهای عددی و متنی
         detectionReason: item.reason || "بدون توضیح",
@@ -275,7 +280,9 @@ export const investigationService = {
           priority: dynamicPriority as any,
           
           // اطلاعات جدول
-          title: policy.title || "تخلف نامشخص",
+          title: item.matchedRules?.length > 1 
+            ? item.matchedRules.map((m: any) => m.title).join(" | ") 
+            : (policy.title || "تخلف نامشخص"),
           description: assessment.reason ? assessment.reason.substring(0, 45) + "..." : "[بدون دلیل مشخص]",
           
           // اطلاعات هویت متخلف (برای جدول و داشبورد)
@@ -296,12 +303,17 @@ export const investigationService = {
           // اطلاعات تکمیلی برای داشبورد کناری (Sidebar)
           contentId: content.content_id || "MSG-0000",
           fullContent: content.body || "متن کامل در دسترس نیست.",
-          matchedRules: [
-            {
-              code: policy.code || "R-000",
-              title: policy.title || "قانون نامشخص",
-            }
-          ],
+          
+          // 👈 کلید حل مشکل: اولویت دادن به آرایه واقعی بک‌اند
+          matchedRules: item.matchedRules && item.matchedRules.length > 0 
+            ? item.matchedRules 
+            : [
+                {
+                  code: policy.code || "R-000",
+                  title: policy.title || "قانون نامشخص",
+                }
+              ],
+              
           detectionReason: assessment.reason || "تطابق با قوانین سیستمی",
           
           // نمودارهای داشبورد کناری
