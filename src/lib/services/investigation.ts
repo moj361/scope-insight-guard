@@ -83,7 +83,7 @@ export const investigationService = {
           code: item.code || "-",
           title: item.title || "بدون عنوان",
           severity: safeSeverity as Policy["severity"], // استفاده از مقدار امن
-          weight: 50, 
+          weight: typeof item.weight === "number" ? item.weight : 50,
           defaultAction: safeAction as Policy["defaultAction"], // استفاده از اکشن امن
           keywords: typeof item.keywords === 'string' 
             ? item.keywords.split(",").map((k: string) => k.trim()).filter(Boolean) 
@@ -103,6 +103,7 @@ export const investigationService = {
     const payload = {
       title: p.title,
       severity: p.severity,
+      weight: Number(p.weight) || 50,
       default_recomned: p.defaultAction,
       keywords: p.keywords.join(","), // تبدیل آرایه به رشته
       prompt: p.prompt,
