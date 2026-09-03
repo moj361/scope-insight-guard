@@ -37,6 +37,13 @@ export interface PolicyCategory {
   color: string;
 }
 
+export interface TieredActions {
+  first: string;
+  second: string;
+  third: string;
+  exceeded: string;
+}
+
 export interface Policy {
   id: string;
   code: string;
@@ -44,6 +51,7 @@ export interface Policy {
   severity: Severity;
   weight: number;
   defaultAction: ExpertAction;
+  tieredActions: TieredActions;
   keywords: string[];
   prompt: string;
   enabled: boolean;

@@ -157,6 +157,62 @@ export function PolicyManagement() {
       width: "140px",
     },
     {
+      key: "tieredActions",
+      header: "اقدامات پلکانی (۱ الی ۴+)",
+      cell: (r) => {
+        const tiers = r.tieredActions || { first: "sms", second: "sms", third: "block", exceeded: "confront" };
+
+        if (editing === r.id && draft) {
+          const draftTiers = draft.tieredActions || { ...tiers };
+          return (
+            <div className="flex items-center gap-1.5 p-1 bg-background/50 rounded border border-border">
+              {(["first", "second", "third", "exceeded"] as const).map((level, idx) => {
+                const labels = ["۱", "۲", "۳", "+۳"];
+                return (
+                  <div key={level} className="flex flex-col items-center gap-0.5">
+                    <span className="text-[9px] text-muted-foreground font-mono">{labels[idx]}</span>
+                    <Select
+                      value={draftTiers[level] || "monitor"}
+                      onValueChange={(val) =>
+                        setDraft({
+                          ...draft,
+                          tieredActions: { ...draftTiers, [level]: val },
+                        })
+                      }
+                    >
+                      <SelectTrigger className="h-6 w-[70px] text-[10px] px-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {actionOptions.map((o) => (
+                          <SelectItem key={o.value} value={o.value as string} className="text-[11px]">
+                            {o.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }
+
+        return (
+          <div className="flex items-center gap-1">
+            <span title="بار اول"><ActionBadge value={tiers.first as any} /></span>
+            <span className="text-muted-foreground text-[10px]">←</span>
+            <span title="بار دوم"><ActionBadge value={tiers.second as any} /></span>
+            <span className="text-muted-foreground text-[10px]">←</span>
+            <span title="بار سوم"><ActionBadge value={tiers.third as any} /></span>
+            <span className="text-muted-foreground text-[10px]">←</span>
+            <span title="بیش از سه بار"><ActionBadge value={tiers.exceeded as any} /></span>
+          </div>
+        );
+      },
+      width: "280px",
+    },
+    {
       key: "keywords",
       header: "کلمات کلیدی",
       cell: (r) =>

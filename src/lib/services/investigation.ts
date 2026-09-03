@@ -66,6 +66,8 @@ export const investigationService = {
       const validSeverities = ["critical", "high", "medium", "low"];
       const validActions = ["confront", "sms", "monitor", "block", "no_action"];
       
+      const defaultTiers = { first: "sms", second: "sms", third: "block", exceeded: "confront" };
+
       return backendData.map((item: any) => {
         // ۱. استانداردسازی سطح اهمیت (حروف کوچک و بررسی اعتبار)
         const rawSeverity = (item.severity || "").toLowerCase();
@@ -85,6 +87,9 @@ export const investigationService = {
           severity: safeSeverity as Policy["severity"], // استفاده از مقدار امن
           weight: typeof item.weight === "number" ? item.weight : 50,
           defaultAction: safeAction as Policy["defaultAction"], // استفاده از اکشن امن
+          tieredActions: item.tiered_actions && typeof item.tiered_actions === 'object'
+            ? item.tiered_actions 
+            : defaultTiers,
           keywords: typeof item.keywords === 'string' 
             ? item.keywords.split(",").map((k: string) => k.trim()).filter(Boolean) 
             : [], 
@@ -105,6 +110,7 @@ export const investigationService = {
       severity: p.severity,
       weight: Number(p.weight) || 50,
       default_recomned: p.defaultAction,
+      tiered_actions: p.tieredActions,
       keywords: p.keywords.join(","), // تبدیل آرایه به رشته
       prompt: p.prompt,
       status: p.enabled ? "active" : "inactive"
