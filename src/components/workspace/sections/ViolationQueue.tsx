@@ -47,15 +47,19 @@ export function ViolationQueue() {
   >({});
 
   useEffect(() => {
-    setDrafts((prev) => {
-      const next = { ...prev };
-      data.forEach((v) => {
-        if (!next[v.id])
-          next[v.id] = { expertAction: v.expertAction, expertComment: v.expertComment };
+      setDrafts((prev) => {
+        const next = { ...prev };
+        data.forEach((v) => {
+          if (!next[v.id]) {
+            next[v.id] = {
+              expertAction: (v.expertAction || v.suggestedAction) as ExpertAction,
+              expertComment: v.expertComment || "",
+            };
+          }
+        });
+        return next;
       });
-      return next;
-    });
-  }, [data]);
+    }, [data]);
 
   const save = useMutation({
     mutationFn: investigationService.saveViolation,
@@ -127,7 +131,7 @@ export function ViolationQueue() {
       header: "اقدام کارشناس",
       cell: (r) => (
         <Select
-          value={drafts[r.id]?.expertAction || ""}
+          value={drafts[r.id]?.expertAction || (r.expertAction || r.suggestedAction) || ""}
           onValueChange={(v) => updateDraft(r.id, { expertAction: v as ExpertAction })}
         >
           <SelectTrigger
@@ -177,14 +181,17 @@ export function ViolationQueue() {
           onClick={(e) => {
             e.stopPropagation();
             const d = drafts[r.id];
-            if (!d?.expertAction) {
+            const actionToSave = d?.expertAction || r.expertAction || r.suggestedAction;
+
+            if (!actionToSave) {
               toast.error("لطفاً اقدام کارشناس را انتخاب کنید");
               return;
             }
+
             save.mutate({
               ...r,
-              expertAction: d.expertAction,
-              expertComment: d.expertComment,
+              expertAction: actionToSave as ExpertAction,
+              expertComment: d?.expertComment ?? r.expertComment ?? "",
               status: "approved",
             });
           }}
