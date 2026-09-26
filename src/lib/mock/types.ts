@@ -51,7 +51,7 @@ export interface Policy {
   severity: Severity;
   weight: number;
   defaultAction: ExpertAction;
-  tieredActions: TieredActions;
+  tieredActions?: TieredActions;
   keywords: string[];
   prompt: string;
   enabled: boolean;
