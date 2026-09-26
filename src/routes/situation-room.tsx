@@ -35,11 +35,10 @@ import {
 } from "@/lib/services/situationRoom";
 
 const L = {
-  title: "اتاق اشراف کلان",
-  titleEn: "Situation Room",
+  title: "سپهر فضای مجازی",
   subtitle: "Macro-level situational awareness by geography and topic",
-  where: "کجا · WHERE",
-  what: "چه چیزی · WHAT",
+  where: "موقعیت · Location",
+  what: "نظام موضوعی · Categories",
   countrySearch: "جستجوی کشور…",
   topicSearch: "جستجوی دسته یا موضوع…",
   national: "ملی",
@@ -53,12 +52,9 @@ const L = {
   noCountryCases: "هنوز پرونده متصلی برای این کشور موجود نیست.",
   connectedCases: "پرونده‌های متصل",
   pickCountry: "یک کشور را روی نقشه یا از طریق جستجو انتخاب کنید.",
-  context: "زمینه فعلی · Current Context",
-  country: "کشور",
   scope: "دامنه",
   category: "دسته",
   topic: "موضوع",
-  status: "وضعیت",
   back: "میز کار",
   noResults: "نتیجه‌ای یافت نشد",
 };
@@ -66,9 +62,9 @@ const L = {
 export const Route = createFileRoute("/situation-room")({
   head: () => ({
     meta: [
-      { title: "Situation Room — اتاق اشراف کلان" },
+      { title: "سپهر فضای مجازی" },
       { name: "description", content: "Macro-level situational awareness by geography and topic." },
-      { property: "og:title", content: "Situation Room — اتاق اشراف کلان" },
+      { property: "og:title", content: "سپهر فضای مجازی" },
       { property: "og:description", content: "Macro-level situational awareness by geography and topic." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -111,7 +107,7 @@ function SituationRoomPage() {
             </div>
             <div className="leading-tight">
               <div className="text-[13px] font-semibold tracking-tight">
-                {L.title} · <span dir="ltr">{L.titleEn}</span>
+                {L.title}
               </div>
               <div className="text-[10px] text-muted-foreground" dir="ltr">{L.subtitle}</div>
             </div>
