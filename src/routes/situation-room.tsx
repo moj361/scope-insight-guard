@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   FolderOpen,
 } from "lucide-react";
-import { RequireAuth } from "@/components/auth/RequireAuth";
+// MVP demo bypass (temporary): Situation Room renders without the login guard.
 import { WorldMap } from "@/components/situation-room/WorldMap";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -74,11 +74,7 @@ export const Route = createFileRoute("/situation-room")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <RequireAuth>
-      <SituationRoomPage />
-    </RequireAuth>
-  ),
+  component: SituationRoomPage,
 });
 
 function SituationRoomPage() {
