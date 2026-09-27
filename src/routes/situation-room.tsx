@@ -121,7 +121,7 @@ function SituationRoomPage() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1600px] gap-3 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <main className="mx-auto max-w-[1600px] px-4 py-4">
         <div className="flex min-w-0 flex-col gap-3">
           {/* WHERE */}
           <Panel title={L.where} icon={<Globe2 className="size-4" />}>
@@ -168,10 +168,6 @@ function SituationRoomPage() {
             </Panel>
           )}
         </div>
-
-        <aside className="lg:sticky lg:top-16 lg:self-start">
-          <ContextPanel ctx={ctx} countryName={country ? (country.nameFa ?? country.name) : null} />
-        </aside>
       </main>
     </div>
   );
