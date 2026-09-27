@@ -217,6 +217,12 @@ function LocationScope({
     enabled: !!ctx.provinceId,
   });
   const NONE = "__none";
+  const { data: categories = [] } = useQuery({
+    queryKey: ["situation-room", "categories", ctx.countryId, ctx.provinceId, ctx.cityId],
+    queryFn: () => svc.getCategories(ctx),
+  });
+  const cat = categories.find((c) => c.id === ctx.categoryId);
+  const sub = cat?.subcategories.find((s) => s.id === ctx.subcategoryId);
 
   return (
     <Panel
@@ -230,9 +236,9 @@ function LocationScope({
           variant={ctx.provinceId ? "outline" : "default"}
           className="h-8 text-xs"
           onClick={() => setCtx({ ...ctx, provinceId: null, cityId: null })}
-        >
-          {countryName} · {L.national}
-        </Button>
+          >
+            {L.national}
+          </Button>
         <div className="flex min-w-[180px] flex-col gap-1">
           <span className="text-[10px] text-muted-foreground">{L.province} (اختیاری)</span>
           <Select
@@ -261,10 +267,18 @@ function LocationScope({
                 {cities.map((c) => (
                   <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
+            </SelectContent>
+          </Select>
+        </div>
         )}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3 text-[11px]">
+        <span className="rounded border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground">
+          {L.category}: <span className="font-medium text-foreground">{cat?.name ?? "—"}</span>
+        </span>
+        <span className="rounded border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground">
+          {L.topic}: <span className="font-medium text-foreground">{sub?.name ?? "—"}</span>
+        </span>
       </div>
     </Panel>
   );
