@@ -236,9 +236,9 @@ function LocationScope({
           variant={ctx.provinceId ? "outline" : "default"}
           className="h-8 text-xs"
           onClick={() => setCtx({ ...ctx, provinceId: null, cityId: null })}
-          >
-            {L.national}
-          </Button>
+        >
+          {L.national}
+        </Button>
         <div className="flex min-w-[180px] flex-col gap-1">
           <span className="text-[10px] text-muted-foreground">{L.province} (اختیاری)</span>
           <Select
@@ -267,9 +267,9 @@ function LocationScope({
                 {cities.map((c) => (
                   <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                 ))}
-            </SelectContent>
-          </Select>
-        </div>
+              </SelectContent>
+            </Select>
+          </div>
         )}
       </div>
       <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3 text-[11px]">
