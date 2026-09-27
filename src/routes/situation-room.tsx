@@ -121,7 +121,7 @@ function SituationRoomPage() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1600px] gap-3 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <main className="mx-auto max-w-[1600px] px-4 py-4">
         <div className="flex min-w-0 flex-col gap-3">
           {/* WHERE */}
           <Panel title={L.where} icon={<Globe2 className="size-4" />}>
@@ -168,10 +168,6 @@ function SituationRoomPage() {
             </Panel>
           )}
         </div>
-
-        <aside className="lg:sticky lg:top-16 lg:self-start">
-          <ContextPanel ctx={ctx} countryName={country ? (country.nameFa ?? country.name) : null} />
-        </aside>
       </main>
     </div>
   );
@@ -221,6 +217,12 @@ function LocationScope({
     enabled: !!ctx.provinceId,
   });
   const NONE = "__none";
+  const { data: categories = [] } = useQuery({
+    queryKey: ["situation-room", "categories", ctx.countryId, ctx.provinceId, ctx.cityId],
+    queryFn: () => svc.getCategories(ctx),
+  });
+  const cat = categories.find((c) => c.id === ctx.categoryId);
+  const sub = cat?.subcategories.find((s) => s.id === ctx.subcategoryId);
 
   return (
     <Panel
@@ -235,7 +237,7 @@ function LocationScope({
           className="h-8 text-xs"
           onClick={() => setCtx({ ...ctx, provinceId: null, cityId: null })}
         >
-          {countryName} · {L.national}
+          {L.national}
         </Button>
         <div className="flex min-w-[180px] flex-col gap-1">
           <span className="text-[10px] text-muted-foreground">{L.province} (اختیاری)</span>
@@ -269,6 +271,14 @@ function LocationScope({
             </Select>
           </div>
         )}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3 text-[11px]">
+        <span className="rounded border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground">
+          {L.category}: <span className="font-medium text-foreground">{cat?.name ?? "—"}</span>
+        </span>
+        <span className="rounded border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground">
+          {L.topic}: <span className="font-medium text-foreground">{sub?.name ?? "—"}</span>
+        </span>
       </div>
     </Panel>
   );
@@ -477,59 +487,3 @@ function CountryCases({ countryId, countryName }: { countryId: string; countryNa
   );
 }
 
-function ContextPanel({ ctx, countryName }: { ctx: SituationContext; countryName: string | null }) {
-  const { data: provinces = [] } = useQuery({
-    queryKey: ["situation-room", "provinces", ctx.countryId],
-    queryFn: () => svc.getProvinces(ctx.countryId!),
-    enabled: !!ctx.countryId,
-  });
-  const { data: cities = [] } = useQuery({
-    queryKey: ["situation-room", "cities", ctx.provinceId],
-    queryFn: () => svc.getCities(ctx.provinceId!),
-    enabled: !!ctx.provinceId,
-  });
-  const { data: categories = [] } = useQuery({
-    queryKey: ["situation-room", "categories", ctx.countryId, ctx.provinceId, ctx.cityId],
-    queryFn: () => svc.getCategories(ctx),
-    enabled: !!ctx.countryId,
-  });
-  const { data: kase } = useCaseFor(ctx.subcategoryId, ctx);
-
-  const hasTax = provinces.length > 0 || categories.length > 0;
-  const cat = categories.find((c) => c.id === ctx.categoryId);
-  const sub = cat?.subcategories.find((s) => s.id === ctx.subcategoryId);
-  const scope = !hasTax
-    ? null
-    : ctx.provinceId
-      ? [provinces.find((p) => p.id === ctx.provinceId)?.name, cities.find((c) => c.id === ctx.cityId)?.name]
-          .filter(Boolean)
-          .join(" / ")
-      : L.national;
-
-  const rows: [string, React.ReactNode][] = [[L.country, countryName ?? "—"]];
-  if (scope) rows.push([L.scope, scope]);
-  if (hasTax) {
-    rows.push([L.category, cat?.name ?? "—"]);
-    rows.push([L.topic, sub?.name ?? "—"]);
-  }
-  if (kase) rows.push([L.status, <span className="text-success">{L.activeCase}</span>]);
-
-  return (
-    <Panel title={L.context} icon={<Radar className="size-4" />}>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-xs">
-        {rows.map(([k, v]) => (
-          <div key={k} className="contents">
-            <dt className="text-muted-foreground">{k}</dt>
-            <dd className="font-medium">{v}</dd>
-          </div>
-        ))}
-      </dl>
-      {kase && (
-        <div className="mt-3 border-t border-border pt-3">
-          <CaseActions kase={kase} />
-        </div>
-      )}
-      {sub && !kase && <p className="mt-3 text-[10px] text-muted-foreground">{L.noCase}</p>}
-    </Panel>
-  );
-}
