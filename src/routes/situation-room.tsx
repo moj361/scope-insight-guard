@@ -14,6 +14,15 @@ import {
 } from "lucide-react";
 // MVP demo bypass (temporary): Situation Room renders without the login guard.
 import { WorldMap } from "@/components/situation-room/WorldMap";
+import { IranMap } from "@/components/situation-room/IranMap";
+import {
+  AttentionRequired,
+  CommunityDistribution,
+  CommunityOverview,
+  TopCommunities,
+  WhatsChanging,
+} from "@/components/situation-room/LandscapeSections";
+import { PLATFORM_LABELS, type LandscapeContext, type PlatformFilter } from "@/lib/services/communityLandscape";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,6 +84,8 @@ export const Route = createFileRoute("/situation-room")({
 
 function SituationRoomPage() {
   const [ctx, setCtx] = useState<SituationContext>({ ...emptyContext, countryId: "IRN" });
+  const [platform, setPlatform] = useState<PlatformFilter>("all");
+  const [mapLevel, setMapLevel] = useState<"world" | "country">("world");
   const [countryQuery, setCountryQuery] = useState("");
 
   const { data: countries = [] } = useQuery({
@@ -83,10 +94,17 @@ function SituationRoomPage() {
     staleTime: Infinity,
   });
   const country = countries.find((c) => c.id === ctx.countryId) ?? null;
+  const lctx: LandscapeContext = { ...ctx, platform };
 
   const selectCountry = (id: string) => {
     setCtx({ ...emptyContext, countryId: id });
     setCountryQuery("");
+    const c = countries.find((x) => x.id === id);
+    setMapLevel(c?.hasTaxonomy ? "country" : "world");
+  };
+  const setScope = (next: SituationContext) => {
+    if (next.provinceId) setMapLevel("country");
+    setCtx(next);
   };
 
   const countryMatches = useMemo(() => {
@@ -119,53 +137,92 @@ function SituationRoomPage() {
             </Link>
           </Button>
         </div>
+        {country && (
+          <ContextBar ctx={ctx} country={country} platform={platform} setPlatform={setPlatform} />
+        )}
       </header>
 
       <main className="mx-auto max-w-[1600px] px-4 py-4">
         <div className="flex min-w-0 flex-col gap-3">
-          {/* WHERE */}
-          <Panel title={L.where} icon={<Globe2 className="size-4" />}>
-            <div className="relative mb-3 max-w-sm">
-              <Search className="pointer-events-none absolute start-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={countryQuery}
-                onChange={(e) => setCountryQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && countryMatches[0] && selectCountry(countryMatches[0].id)}
-                placeholder={L.countrySearch}
-                className="h-8 ps-8 text-xs"
-                aria-label={L.countrySearch}
-              />
-              {countryMatches.length > 0 && (
-                <ul className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-md border border-border bg-popover text-xs shadow-lg">
-                  {countryMatches.map((c) => (
-                    <li key={c.id}>
-                      <button
-                        type="button"
-                        onClick={() => selectCountry(c.id)}
-                        className="flex w-full items-center justify-between px-3 py-1.5 text-start hover:bg-accent"
-                      >
-                        <span>{c.nameFa ?? c.name}</span>
-                        <span className="text-[10px] text-muted-foreground" dir="ltr">{c.name}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+          <div className="grid gap-3 xl:grid-cols-12">
+            {/* WHERE */}
+            <div className="xl:col-span-8">
+              <Panel
+                title={L.where}
+                icon={<Globe2 className="size-4" />}
+                actions={
+                  <MapCrumbs
+                    ctx={ctx}
+                    country={country}
+                    mapLevel={mapLevel}
+                    onWorld={() => setMapLevel("world")}
+                    onCountry={() => { setCtx({ ...ctx, provinceId: null, cityId: null }); setMapLevel("country"); }}
+                    onProvince={() => setCtx({ ...ctx, cityId: null })}
+                  />
+                }
+              >
+                <div className="mb-3 flex flex-wrap items-end gap-3">
+                  <div className="relative w-full max-w-[220px]">
+                    <span className="mb-1 block text-[10px] text-muted-foreground">کشور · Country</span>
+                    <Search className="pointer-events-none absolute start-2.5 bottom-2.5 size-3.5 text-muted-foreground" />
+                    <Input
+                      value={countryQuery}
+                      onChange={(e) => setCountryQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && countryMatches[0] && selectCountry(countryMatches[0].id)}
+                      placeholder={country ? (country.nameFa ?? country.name) : L.countrySearch}
+                      className="h-8 ps-8 text-xs placeholder:text-foreground"
+                      aria-label={L.countrySearch}
+                    />
+                    {countryMatches.length > 0 && (
+                      <ul className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-md border border-border bg-popover text-xs shadow-lg">
+                        {countryMatches.map((c) => (
+                          <li key={c.id}>
+                            <button
+                              type="button"
+                              onClick={() => selectCountry(c.id)}
+                              className="flex w-full items-center justify-between px-3 py-1.5 text-start hover:bg-accent"
+                            >
+                              <span>{c.nameFa ?? c.name}</span>
+                              <span className="text-[10px] text-muted-foreground" dir="ltr">{c.name}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  {country?.hasTaxonomy && <GeoSelectors ctx={ctx} setCtx={setScope} />}
+                </div>
+                {country?.hasTaxonomy && mapLevel === "country" ? (
+                  <IranGeoMap ctx={ctx} setCtx={setScope} />
+                ) : (
+                  <WorldMap selectedId={ctx.countryId} highlightIds={["IRN"]} onSelect={selectCountry} />
+                )}
+              </Panel>
             </div>
-            <WorldMap selectedId={ctx.countryId} highlightIds={["IRN"]} onSelect={selectCountry} />
-          </Panel>
+            <div className="flex flex-col gap-3 xl:col-span-4">
+              {country && <CommunityOverview ctx={lctx} />}
+              {country && <AttentionRequired ctx={lctx} />}
+            </div>
+          </div>
 
           {country?.hasTaxonomy ? (
-            <>
-              <LocationScope ctx={ctx} setCtx={setCtx} countryName={country.nameFa ?? country.name} />
-              <WhatSection ctx={ctx} setCtx={setCtx} />
-            </>
+            <WhatSection ctx={ctx} setCtx={setCtx} />
           ) : country ? (
             <CountryCases countryId={country.id} countryName={country.name} />
           ) : (
             <Panel title={L.what} icon={<Layers className="size-4" />}>
               <p className="text-xs text-muted-foreground">{L.pickCountry}</p>
             </Panel>
+          )}
+
+          {country && (
+            <>
+              <div className="grid gap-3 xl:grid-cols-12">
+                <div className="xl:col-span-7"><WhatsChanging ctx={lctx} /></div>
+                <div className="xl:col-span-5"><CommunityDistribution ctx={lctx} /></div>
+              </div>
+              <TopCommunities ctx={lctx} />
+            </>
           )}
         </div>
       </main>
@@ -198,113 +255,177 @@ function Panel({
   );
 }
 
-function LocationScope({
-  ctx,
-  setCtx,
-  countryName,
-}: {
-  ctx: SituationContext;
-  setCtx: (c: SituationContext) => void;
-  countryName: string;
-}) {
+function useGeo(ctx: SituationContext) {
   const { data: provinces = [] } = useQuery({
     queryKey: ["situation-room", "provinces", ctx.countryId],
     queryFn: () => svc.getProvinces(ctx.countryId!),
+    enabled: !!ctx.countryId,
   });
   const { data: cities = [] } = useQuery({
     queryKey: ["situation-room", "cities", ctx.provinceId],
     queryFn: () => svc.getCities(ctx.provinceId!),
     enabled: !!ctx.provinceId,
   });
+  return { provinces, cities };
+}
+
+function GeoSelectors({ ctx, setCtx }: { ctx: SituationContext; setCtx: (c: SituationContext) => void }) {
+  const { provinces, cities } = useGeo(ctx);
   const NONE = "__none";
+  return (
+    <>
+      <div className="flex min-w-[170px] flex-col gap-1">
+        <span className="text-[10px] text-muted-foreground">{L.province} (اختیاری)</span>
+        <Select
+          value={ctx.provinceId ?? NONE}
+          onValueChange={(v) => setCtx({ ...ctx, provinceId: v === NONE ? null : v, cityId: null })}
+        >
+          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value={NONE}>{L.allProvinces}</SelectItem>
+            {provinces.map((p) => (
+              <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex min-w-[150px] flex-col gap-1">
+        <span className="text-[10px] text-muted-foreground">{L.city} (اختیاری)</span>
+        <Select
+          disabled={!ctx.provinceId}
+          value={ctx.cityId ?? NONE}
+          onValueChange={(v) => setCtx({ ...ctx, cityId: v === NONE ? null : v })}
+        >
+          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value={NONE}>{L.allCities}</SelectItem>
+            {cities.map((c) => (
+              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <Button
+        size="sm"
+        variant={ctx.provinceId ? "outline" : "default"}
+        className="h-8 text-xs"
+        onClick={() => setCtx({ ...ctx, provinceId: null, cityId: null })}
+      >
+        {L.national}
+      </Button>
+    </>
+  );
+}
+
+function IranGeoMap({ ctx, setCtx }: { ctx: SituationContext; setCtx: (c: SituationContext) => void }) {
+  const { provinces, cities } = useGeo(ctx);
+  const names = useMemo(() => Object.fromEntries(provinces.map((p) => [p.id, p.name])), [provinces]);
+  return (
+    <IranMap
+      provinceId={ctx.provinceId}
+      cityId={ctx.cityId}
+      provinceNames={names}
+      cities={cities}
+      onSelectProvince={(id) => setCtx({ ...ctx, provinceId: id, cityId: null })}
+      onSelectCity={(id) => setCtx({ ...ctx, cityId: ctx.cityId === id ? null : id })}
+    />
+  );
+}
+
+function MapCrumbs({
+  ctx, country, mapLevel, onWorld, onCountry, onProvince,
+}: {
+  ctx: SituationContext;
+  country: { nameFa?: string; name: string; hasTaxonomy: boolean } | null;
+  mapLevel: "world" | "country";
+  onWorld: () => void;
+  onCountry: () => void;
+  onProvince: () => void;
+}) {
+  const { provinces } = useGeo(ctx);
+  const prov = provinces.find((p) => p.id === ctx.provinceId);
+  const btn = (label: string, onClick: () => void, active: boolean) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn("rounded px-1.5 py-0.5 hover:bg-accent", active ? "text-foreground font-medium" : "text-muted-foreground")}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <nav className="flex items-center gap-0.5 text-[11px]" aria-label="Map level">
+      {btn("جهان", onWorld, mapLevel === "world")}
+      {country?.hasTaxonomy && (
+        <>
+          <span className="text-muted-foreground">›</span>
+          {btn(country.nameFa ?? country.name, onCountry, mapLevel === "country" && !prov)}
+        </>
+      )}
+      {prov && mapLevel === "country" && (
+        <>
+          <span className="text-muted-foreground">›</span>
+          {btn(prov.name, onProvince, true)}
+        </>
+      )}
+    </nav>
+  );
+}
+
+const PLATFORMS: { id: PlatformFilter; label: string }[] = [
+  { id: "all", label: "همه" },
+  ...(Object.keys(PLATFORM_LABELS) as (keyof typeof PLATFORM_LABELS)[]).map((id) => ({ id, label: PLATFORM_LABELS[id] })),
+];
+
+function ContextBar({
+  ctx, country, platform, setPlatform,
+}: {
+  ctx: SituationContext;
+  country: { nameFa?: string; name: string };
+  platform: PlatformFilter;
+  setPlatform: (p: PlatformFilter) => void;
+}) {
+  const { provinces, cities } = useGeo(ctx);
   const { data: categories = [] } = useQuery({
     queryKey: ["situation-room", "categories", ctx.countryId, ctx.provinceId, ctx.cityId],
     queryFn: () => svc.getCategories(ctx),
   });
   const cat = categories.find((c) => c.id === ctx.categoryId);
   const sub = cat?.subcategories.find((s) => s.id === ctx.subcategoryId);
-
-  return (
-    <Panel
-      title={L.scope}
-      icon={<MapPin className="size-4" />}
-      actions={<Breadcrumb ctx={ctx} countryName={countryName} provinces={provinces} cities={cities} />}
-    >
-      <div className="flex flex-wrap items-end gap-3">
-        <Button
-          size="sm"
-          variant={ctx.provinceId ? "outline" : "default"}
-          className="h-8 text-xs"
-          onClick={() => setCtx({ ...ctx, provinceId: null, cityId: null })}
-        >
-          {L.national}
-        </Button>
-        <div className="flex min-w-[180px] flex-col gap-1">
-          <span className="text-[10px] text-muted-foreground">{L.province} (اختیاری)</span>
-          <Select
-            value={ctx.provinceId ?? NONE}
-            onValueChange={(v) => setCtx({ ...ctx, provinceId: v === NONE ? null : v, cityId: null })}
-          >
-            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NONE}>{L.allProvinces}</SelectItem>
-              {provinces.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {ctx.provinceId && (
-          <div className="flex min-w-[160px] flex-col gap-1">
-            <span className="text-[10px] text-muted-foreground">{L.city} (اختیاری)</span>
-            <Select
-              value={ctx.cityId ?? NONE}
-              onValueChange={(v) => setCtx({ ...ctx, cityId: v === NONE ? null : v })}
-            >
-              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NONE}>{L.allCities}</SelectItem>
-                {cities.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
-      </div>
-      <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3 text-[11px]">
-        <span className="rounded border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground">
-          {L.category}: <span className="font-medium text-foreground">{cat?.name ?? "—"}</span>
-        </span>
-        <span className="rounded border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground">
-          {L.topic}: <span className="font-medium text-foreground">{sub?.name ?? "—"}</span>
-        </span>
-      </div>
-    </Panel>
-  );
-}
-
-function Breadcrumb({
-  ctx,
-  countryName,
-  provinces,
-  cities,
-}: {
-  ctx: SituationContext;
-  countryName: string;
-  provinces: { id: string; name: string }[];
-  cities: { id: string; name: string }[];
-}) {
-  const parts = [countryName];
-  if (!ctx.provinceId) parts.push(L.national);
+  const geo = [country.nameFa ?? country.name];
+  if (!ctx.provinceId) geo.push(L.national);
   else {
-    parts.push(provinces.find((p) => p.id === ctx.provinceId)?.name ?? "");
-    if (ctx.cityId) parts.push(cities.find((c) => c.id === ctx.cityId)?.name ?? "");
+    geo.push(provinces.find((p) => p.id === ctx.provinceId)?.name ?? "");
+    if (ctx.cityId) geo.push(cities.find((c) => c.id === ctx.cityId)?.name ?? "");
   }
+  const chip = "rounded border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground";
   return (
-    <span className="rounded border border-border bg-muted/50 px-2 py-0.5 text-[11px] text-muted-foreground">
-      {parts.join(" / ")}
-    </span>
+    <div className="border-t border-border bg-panel/95">
+      <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-2 px-4 py-2 text-[11px]">
+        <span className="flex items-center gap-1 font-semibold text-primary"><MapPin className="size-3.5" />{L.scope}</span>
+        <span className={chip}><span className="font-medium text-foreground">{geo.join(" / ")}</span></span>
+        <span className={chip}>
+          {L.category}: <span className="font-medium text-foreground">{cat?.name ?? "همه موضوعات"}</span>
+          {sub && <> ← <span className="font-medium text-foreground">{sub.name}</span></>}
+        </span>
+        <div className="ms-auto flex flex-wrap items-center gap-1" role="group" aria-label="Platform">
+          {PLATFORMS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setPlatform(p.id)}
+              aria-pressed={platform === p.id}
+              className={cn(
+                "rounded border px-2 py-0.5 transition-colors",
+                platform === p.id ? "border-primary bg-primary/15 text-foreground" : "border-border text-muted-foreground hover:border-primary/40",
+              )}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
