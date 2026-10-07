@@ -16,10 +16,12 @@ interface Props {
   cities: CityPoint[];
   onSelectProvince: (id: string) => void;
   onSelectCity: (id: string) => void;
+  /** Optional 0..1 intensity per province — renders a presence choropleth */
+  values?: Record<string, number>;
 }
 
 /** Iran province/city drill-down map. Fits to the whole country or the selected province. */
-export function IranMap({ provinceId, cityId, provinceNames, cities, onSelectProvince, onSelectCity }: Props) {
+export function IranMap({ provinceId, cityId, provinceNames, cities, onSelectProvince, onSelectCity, values }: Props) {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [hover, setHover] = useState<{ name: string; x: number; y: number } | null>(null);
 
@@ -79,6 +81,7 @@ export function IranMap({ provinceId, cityId, provinceNames, cities, onSelectPro
         {paths.map(({ id, d }) => {
           const selected = id === provinceId;
           const dim = !!provinceId && !selected;
+          const v = values?.[id];
           return (
             <path
               key={id}
@@ -99,6 +102,7 @@ export function IranMap({ provinceId, cityId, provinceNames, cities, onSelectPro
                     : "fill-muted stroke-border hover:fill-primary/50 focus-visible:fill-primary/50",
               )}
               strokeWidth={selected ? 1.5 : 0.6}
+              style={v != null && !selected ? { fill: `color-mix(in oklab, var(--color-primary) ${Math.round(12 + v * 78)}%, var(--color-muted))` } : undefined}
             />
           );
         })}
