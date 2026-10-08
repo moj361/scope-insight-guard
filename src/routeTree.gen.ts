@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SituationRoomRouteImport } from './routes/situation-room'
+import { Route as CommunityCommunityIdRouteImport } from './routes/community.$communityId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,45 @@ const SituationRoomRoute = SituationRoomRouteImport.update({
   path: '/situation-room',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityCommunityIdRoute = CommunityCommunityIdRouteImport.update({
+  id: '/community/$communityId',
+  path: '/community/$communityId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/situation-room': typeof SituationRoomRoute
+  '/community/$communityId': typeof CommunityCommunityIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/situation-room': typeof SituationRoomRoute
+  '/community/$communityId': typeof CommunityCommunityIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/situation-room': typeof SituationRoomRoute
+  '/community/$communityId': typeof CommunityCommunityIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/situation-room'
+  fullPaths: '/' | '/login' | '/situation-room' | '/community/$communityId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/situation-room'
-  id: '__root__' | '/' | '/login' | '/situation-room'
+  to: '/' | '/login' | '/situation-room' | '/community/$communityId'
+  id:
+    '__root__' | '/' | '/login' | '/situation-room' | '/community/$communityId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   SituationRoomRoute: typeof SituationRoomRoute
+  CommunityCommunityIdRoute: typeof CommunityCommunityIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +93,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SituationRoomRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community/$communityId': {
+      id: '/community/$communityId'
+      path: '/community/$communityId'
+      fullPath: '/community/$communityId'
+      preLoaderRoute: typeof CommunityCommunityIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +107,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   SituationRoomRoute: SituationRoomRoute,
+  CommunityCommunityIdRoute: CommunityCommunityIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

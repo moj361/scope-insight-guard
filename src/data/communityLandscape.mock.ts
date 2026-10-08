@@ -19,6 +19,8 @@ export interface Community {
   /** null = national reach */
   provinceId: string | null;
   isNew?: boolean;
+  /** Set when a Community Profile exists (route /community/$communityId) */
+  profileId?: string;
 }
 
 export type InsightType = "emerging" | "increase" | "decrease" | "new_community" | "shift";
@@ -72,6 +74,7 @@ const c = (
 ): Community => ({ id, name, handle, platform, members, activity, growth, categoryId, subcategoryId, provinceId, isNew });
 
 export const MOCK_COMMUNITIES: Community[] = [
+  { ...c("cm-00", "فرهنگیان", "Teachers & Educators", "telegram", 96400, "high", 18, "education", undefined, null), profileId: "farhangian" },
   c("cm-01", "جامعه اقتصادی ایران", "@iran_economy", "telegram", 42300, "high", 38, "economy", "economy-5", null),
   c("cm-02", "نرخ لحظه‌ای ارز تهران", "@tehran_fx_live", "telegram", 61800, "high", 74, "economy", "economy-5", "tehran"),
   c("cm-03", "صرافان منوچهری", "@manouchehri_ex", "telegram", 18400, "high", 52, "economy", "economy-10", "tehran"),
