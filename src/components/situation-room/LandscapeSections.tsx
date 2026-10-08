@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Activity, AlertTriangle, ArrowDownRight, ArrowUpRight, Repeat, Sparkles, TrendingUp, Users, PieChart, ListOrdered, Construction } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -246,9 +247,17 @@ export function TopCommunities({ ctx }: { ctx: LandscapeContext }) {
                 </div>
               </div>
               <div className="px-4">
-                <Button className="w-full gap-1.5 text-xs" disabled={!COMMUNITY_WORKSPACE_READY}>
-                  <Activity className="size-3.5" /> ورود به میز کار جامعه (به‌زودی)
-                </Button>
+                {selected.profileId ? (
+                  <Button asChild className="w-full gap-1.5 text-xs">
+                    <Link to="/community/$communityId" params={{ communityId: selected.profileId }}>
+                      <Activity className="size-3.5" /> مشاهده پروفایل جامعه
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button className="w-full gap-1.5 text-xs" disabled={!COMMUNITY_WORKSPACE_READY}>
+                    <Activity className="size-3.5" /> ورود به میز کار جامعه (به‌زودی)
+                  </Button>
+                )}
               </div>
             </>
           )}
