@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Boxes, Flame, Newspaper, Search, Share2, Sparkles, Star, Clock, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -134,7 +135,7 @@ export function PeopleTab({ communityId }: { communityId: string }) {
               <tbody>
                 {q.data.items.map((p) => (
                   <tr key={p.id} className="border-b border-border/60 hover:bg-accent/40">
-                    <td className="px-2 py-2"><div className="font-medium">{p.name}</div><div className="text-[10px] text-muted-foreground" dir="ltr">{p.handle}</div></td>
+                    <td className="px-2 py-2">{p.profileId ? <Link to="/person/$personId" params={{ personId: p.profileId }} className="font-medium text-primary hover:underline">{p.name}</Link> : <div className="font-medium">{p.name}</div>}<div className="text-[10px] text-muted-foreground" dir="ltr">{p.handle}</div></td>
                     <td className="px-2 py-2 text-[11px]">{ROLE[p.role]}</td>
                     <td className="px-2 py-2 text-[10px] text-muted-foreground" dir="ltr">{p.platforms.map((x) => PLATFORM[x]).join(" · ")}</td>
                     <td className="num-fa px-2 py-2">{fa(p.relatedCommunities)}</td>

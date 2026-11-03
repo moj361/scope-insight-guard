@@ -45,6 +45,8 @@ export interface Person {
   id: string; name: string; handle: string; role: PersonRole; platforms: ProfilePlatform[];
   relatedCommunities: number; content: number; engagement: number; reach: number;
   topicBreadth: number; activity: Level; provinceId: string; topics: string[];
+  /** Set when a Person Profile exists (route /person/$personId) */
+  profileId?: string;
 }
 export interface Topic { id: string; name: string; parentId: string | null; share: number; growth: number; sources: number; communities: number }
 export interface EmergingTopic {
@@ -238,6 +240,12 @@ export function getMockPeople(): Person[] {
       topics,
     };
   });
+  // Demo people with full profiles — pinned with the highest reach so they appear first
+  peopleCache.unshift(
+    { id: "p-ali", profileId: "ali-rezaei", name: "علی رضایی", handle: "@rezaei_edu", role: "community_admin", platforms: ["telegram", "instagram", "x"], relatedCommunities: 14, content: 3120, engagement: 74.2, reach: 486000, topicBreadth: 6, activity: "high", provinceId: "tehran", topics: ["رتبه‌بندی", "امتحانات", "حقوق و مزایا"] },
+    { id: "p-maryam", profileId: "maryam-ahmadi", name: "مریم احمدی", handle: "@ahmadi_sanjesh", role: "content_creator", platforms: ["telegram", "instagram", "x"], relatedCommunities: 8, content: 1460, engagement: 61.5, reach: 429000, topicBreadth: 4, activity: "high", provinceId: "isfahan", topics: ["امتحانات", "رتبه‌بندی"] },
+    { id: "p-anon", profileId: "anon-003", name: "کاربر ناشناس ۰۰۳", handle: "@moallem_bi_nam", role: "highly_active", platforms: ["telegram", "x"], relatedCommunities: 5, content: 2280, engagement: 48.9, reach: 412000, topicBreadth: 3, activity: "high", provinceId: "tehran", topics: ["حقوق و مزایا", "رتبه‌بندی"] },
+  );
   return peopleCache;
 }
 
