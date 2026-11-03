@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Activity, ArrowDownRight, ArrowUpRight, Boxes, Globe2, Layers, Map as MapIcon, Network, Sparkles, Target, TrendingUp, Users, Waypoints, Radio, Plus } from "lucide-react";
 import { IranMap } from "@/components/situation-room/IranMap";
@@ -151,7 +152,7 @@ export function OverviewTab({ data, onOpenSegment, onGoTab }: { data: Profile; o
               <tbody>
                 {data.keyPeople.map((p) => (
                   <tr key={p.id} className="border-b border-border/60">
-                    <td className="px-3 py-2"><div className="font-medium">{p.name}</div><div className="text-[10px] text-muted-foreground" dir="ltr">{p.handle}</div></td>
+                    <td className="px-3 py-2">{p.profileId ? <Link to="/person/$personId" params={{ personId: p.profileId }} className="font-medium text-primary hover:underline">{p.name}</Link> : <div className="font-medium">{p.name}</div>}<div className="text-[10px] text-muted-foreground" dir="ltr">{p.handle}</div></td>
                     <td className="px-3 py-2 text-[11px]">{ROLE[p.role]}</td>
                     <td className="num-fa px-3 py-2">{fa(p.relatedCommunities)}</td>
                     <td className="num-fa px-3 py-2">{compact(p.content)}</td>
