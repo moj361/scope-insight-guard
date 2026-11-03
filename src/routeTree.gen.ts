@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SituationRoomRouteImport } from './routes/situation-room'
 import { Route as CommunityCommunityIdRouteImport } from './routes/community.$communityId'
+import { Route as PersonPersonIdRouteImport } from './routes/person.$personId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const CommunityCommunityIdRoute = CommunityCommunityIdRouteImport.update({
   path: '/community/$communityId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PersonPersonIdRoute = PersonPersonIdRouteImport.update({
+  id: '/person/$personId',
+  path: '/person/$personId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/situation-room': typeof SituationRoomRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
+  '/person/$personId': typeof PersonPersonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/situation-room': typeof SituationRoomRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
+  '/person/$personId': typeof PersonPersonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,14 +61,30 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/situation-room': typeof SituationRoomRoute
   '/community/$communityId': typeof CommunityCommunityIdRoute
+  '/person/$personId': typeof PersonPersonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/situation-room' | '/community/$communityId'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/situation-room'
+    | '/community/$communityId'
+    | '/person/$personId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/situation-room' | '/community/$communityId'
+  to:
+    | '/'
+    | '/login'
+    | '/situation-room'
+    | '/community/$communityId'
+    | '/person/$personId'
   id:
-    '__root__' | '/' | '/login' | '/situation-room' | '/community/$communityId'
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/situation-room'
+    | '/community/$communityId'
+    | '/person/$personId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -68,6 +92,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SituationRoomRoute: typeof SituationRoomRoute
   CommunityCommunityIdRoute: typeof CommunityCommunityIdRoute
+  PersonPersonIdRoute: typeof PersonPersonIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -100,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunityCommunityIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/person/$personId': {
+      id: '/person/$personId'
+      path: '/person/$personId'
+      fullPath: '/person/$personId'
+      preLoaderRoute: typeof PersonPersonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -108,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SituationRoomRoute: SituationRoomRoute,
   CommunityCommunityIdRoute: CommunityCommunityIdRoute,
+  PersonPersonIdRoute: PersonPersonIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
