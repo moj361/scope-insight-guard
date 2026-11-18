@@ -11,6 +11,7 @@ import {
   Radio,
   ScrollText,
   LogOut,
+  MapPinned,
   ShieldAlert,
   SlidersHorizontal,
   Zap,
@@ -23,6 +24,7 @@ import {
   type FiltersState,
 } from "@/components/workspace/sections/FiltersBar";
 import { Statistics } from "@/components/workspace/sections/Statistics";
+import { GeospatialMonitoring } from "@/components/workspace/monitoring/GeospatialMonitoring";
 import { OfflineImport } from "@/components/workspace/sections/OfflineImport";
 import { PolicyManagement } from "@/components/workspace/sections/PolicyManagement";
 import { LiveContent } from "@/components/workspace/sections/LiveContent";
@@ -35,6 +37,14 @@ import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/")({
+  head: () => ({ meta: [
+    { title: "میز کار تحلیلگر | سکوی حاکمیت رسانه" },
+    { name: "description", content: "میز کار تحلیلگر برای ارزیابی محتوا، پایش مکانی و زمانی رخدادها و بررسی تخلفات رسانه‌ای." },
+    { property: "og:title", content: "میز کار تحلیلگر | سکوی حاکمیت رسانه" },
+    { property: "og:description", content: "ارزیابی محتوا و پایش مکانی و زمانی رخدادهای رسانه‌ای." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: WorkspaceRoute,
 });
 
@@ -138,6 +148,16 @@ function WorkspacePage() {
           accent="info"
         >
           <Statistics />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          id="geospatial-monitoring"
+          title="پایش مکانی و زمانی"
+          subtitle="Geospatial & Timeline Monitoring"
+          icon={<MapPinned className="size-4" />}
+          accent="info"
+        >
+          <GeospatialMonitoring />
         </CollapsibleSection>
 
         <CollapsibleSection
