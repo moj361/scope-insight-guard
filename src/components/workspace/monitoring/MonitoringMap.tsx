@@ -23,11 +23,13 @@ export function MonitoringMap({ events, provinceNames, recentStart, selectedProv
       {geometry.data?.features.map((f) => {
         const items = grouped.get(f.id) ?? [];
         const intensity = items.reduce((sum, e) => sum + e.intensity, 0);
-        const level = intensity >= 2 ? "fill-high/70" : intensity >= 1 ? "fill-warning/45" : intensity > 0 ? "fill-primary/30" : "fill-muted/40";
+        // Continuous heat glow over one dark neutral base; intensity scales 0..~3.
+        const heat = Math.min(intensity / 3, 1);
         const name = provinceNames[f.id] ?? f.id;
         return <path key={f.id} d={f.geometry.coordinates.map((poly) => poly.map((ring) => "M" + ring.map(([lng, lat]) => project(lng, lat).join(",")).join("L") + "Z").join("")).join("")}
-          fillRule="evenodd" className={cn("cursor-pointer outline-none hover:fill-primary/60 focus-visible:fill-primary/60", level, selectedProvince === f.id ? "stroke-primary" : "stroke-border")}
-          strokeWidth={selectedProvince === f.id ? 2.5 : 0.8} role="button" tabIndex={0} aria-label={`فعالیت استان ${name}`}
+          fillRule="evenodd" className={cn("cursor-pointer fill-muted/40 outline-none transition-[filter] duration-150 hover:brightness-125 focus-visible:brightness-125", selectedProvince === f.id ? "stroke-primary" : "stroke-border/60")}
+          style={heat > 0 ? { fill: `color-mix(in oklab, var(--color-high) ${Math.round(8 + heat * 62)}%, var(--color-muted))` } : undefined}
+          strokeWidth={selectedProvince === f.id ? 2 : 0.6} role="button" tabIndex={0} aria-label={`فعالیت استان ${name}`}
           onClick={() => onProvince(f.id)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onProvince(f.id); } }}>
           <title>{name} · {items.length.toLocaleString("fa-IR")} رخداد</title>
         </path>;
@@ -49,7 +51,7 @@ export function MonitoringMap({ events, provinceNames, recentStart, selectedProv
     <div className="flex flex-wrap justify-center gap-4 border-t border-border p-2 text-[10px] text-muted-foreground" dir="rtl">
       <span className="flex items-center gap-1"><i className="size-2 rounded-full bg-success" />تازه‌ترین فعالیت</span>
       <span className="flex items-center gap-1"><i className="size-2 rounded-full bg-foreground/70" />فعالیت تاریخی</span>
-      <span className="flex items-center gap-1">تراکم <i className="size-3 bg-primary/30" /><i className="size-3 bg-warning/45" /><i className="size-3 bg-high/70" /></span>
+      <span className="flex items-center gap-1">تراکم <i className="h-2 w-16 rounded-full" style={{ background: "linear-gradient(to left, color-mix(in oklab, var(--color-high) 70%, var(--color-muted)), var(--color-muted))" }} /></span>
     </div>
   </div>;
 }
