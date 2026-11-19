@@ -37,8 +37,8 @@ export function MonitoringMap({ events, provinceNames, recentStart, selectedProv
         const recent = Date.parse(e.time) >= recentStart;
         return <g key={e.event_id} role="button" tabIndex={0} aria-label={`رخداد ${e.event_type}، ${e.city}`} className="group cursor-pointer outline-none"
           onClick={() => onEvent(e)} onKeyDown={(key) => { if (key.key === "Enter" || key.key === " ") { key.preventDefault(); onEvent(e); } }}>
-          <circle cx={x} cy={y} r={13} className="fill-transparent" />
-          {recent && <circle cx={x} cy={y} r={10} className="fill-none stroke-success" strokeWidth={1.5} />}
+          <circle cx={x} cy={y} r={6} className="fill-transparent" />
+          {recent && <circle cx={x} cy={y} r={10} className="pointer-events-none fill-none stroke-success" strokeWidth={1.5} />}
           <circle cx={x} cy={y} r={e.intensity >= 0.75 ? 5.5 : 4} className={cn("stroke-background group-hover:stroke-foreground group-focus-visible:stroke-foreground", recent ? "fill-success" : "fill-foreground/70")} strokeWidth={1.5} />
           <title>{e.city} · {e.event_type} · {Math.round(e.intensity * 100).toLocaleString("fa-IR")}٪</title>
         </g>;

@@ -11,7 +11,7 @@ export const MONITORING_EVENTS: MonitoringEvent[] = MOCK_PROVINCES.flatMap((p, p
   return Array.from({ length: 12 }, (_, i) => {
     const city = cities[i % cities.length];
     const [lng, lat] = city?.coord ?? [51.39, 35.69];
-    const ageMinutes = i === 0 ? 3 + pi % 24 : i === 1 ? 65 + pi * 8 : (i - 1) * 780 + pi * 11;
+    const ageMinutes = i === 0 ? 3 + pi % 24 : i === 1 ? 65 + pi * 35 : (i - 1) * 780 + pi * 11;
     const intensity = (35 + (pi * 17 + i * 13) % 62) / 100;
     return {
       event_id: `geo-${p.id}-${i}`, provinceId: p.id, province: p.name,
