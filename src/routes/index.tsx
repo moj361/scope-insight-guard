@@ -35,6 +35,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useAuth } from "@/lib/auth-context";
+import { WORKSPACE_DEMO_MODE } from "@/lib/workspace-demo";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -49,6 +50,7 @@ export const Route = createFileRoute("/")({
 });
 
 function WorkspaceRoute() {
+  if (WORKSPACE_DEMO_MODE) return <WorkspacePage />;
   return (
     <RequireAuth>
       <WorkspacePage />

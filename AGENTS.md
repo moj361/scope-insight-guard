@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 - Mock-backed feature data lives in src/data/*.mock.ts and is read only through src/lib/services/* (one method per future FastAPI endpoint), so swapping to the real API never touches UI. Why: UI-first demos must connect to FastAPI later without rewrites.
 - Workspace monitoring uses isolated components, pure filter/time functions and the existing Iran geometry; its demo clock comes from the service response. Why: playback stays reproducible and FastAPI replacement does not affect UI or other pages.
+- Temporary workspace demo access is controlled by a root-only frontend flag, never by a fabricated authenticated session. Why: the login flow and backend authorization remain intact and the original guard is easily restored.
