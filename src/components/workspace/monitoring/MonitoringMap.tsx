@@ -20,20 +20,48 @@ export function MonitoringMap({ events, provinceNames, recentStart, selectedProv
   });
   return <div className="relative overflow-hidden rounded-md border border-border bg-background/60" dir="ltr">
     <svg viewBox="0 0 780 620" className="block max-h-[440px] w-full" role="group" aria-label="نقشه پایش ایران">
+      <defs>
+        {[...markers.values()].map((e) => {
+          // Radial heat blob: cyan low → green/yellow medium → orange/red high, with a hot core.
+          const i = e.intensity;
+          const core = i >= 0.75 ? "#ef4444" : i >= 0.5 ? "#f97316" : i >= 0.3 ? "#eab308" : "#22d3ee";
+          const mid = i >= 0.75 ? "#f97316" : i >= 0.5 ? "#eab308" : i >= 0.3 ? "#4ade80" : "#2dd4bf";
+          const edge = i >= 0.5 ? "#22c55e" : "#06b6d4";
+          return (
+            <radialGradient key={e.event_id} id={`heat-${e.event_id}`}>
+              <stop offset="0%" stopColor={core} stopOpacity={0.55 + i * 0.4} />
+              <stop offset="35%" stopColor={mid} stopOpacity={0.3 + i * 0.3} />
+              <stop offset="70%" stopColor={edge} stopOpacity={0.12 + i * 0.12} />
+              <stop offset="100%" stopColor={edge} stopOpacity={0} />
+            </radialGradient>
+          );
+        })}
+      </defs>
       {geometry.data?.features.map((f) => {
         const items = grouped.get(f.id) ?? [];
-        const intensity = items.reduce((sum, e) => sum + e.intensity, 0);
-        // Continuous heat glow over one dark neutral base; intensity scales 0..~3.
-        const heat = Math.min(intensity / 3, 1);
         const name = provinceNames[f.id] ?? f.id;
         return <path key={f.id} d={f.geometry.coordinates.map((poly) => poly.map((ring) => "M" + ring.map(([lng, lat]) => project(lng, lat).join(",")).join("L") + "Z").join("")).join("")}
-          fillRule="evenodd" className={cn("cursor-pointer fill-muted/40 outline-none transition-[filter] duration-150 hover:brightness-125 focus-visible:brightness-125", selectedProvince === f.id ? "stroke-primary" : "stroke-border/60")}
-          style={heat > 0 ? { fill: `color-mix(in oklab, var(--color-high) ${Math.round(8 + heat * 62)}%, var(--color-muted))` } : undefined}
+          fillRule="evenodd" className={cn("cursor-pointer fill-muted/70 outline-none transition-[filter] duration-150 hover:brightness-125 focus-visible:brightness-125", selectedProvince === f.id ? "stroke-primary" : "stroke-border/60")}
           strokeWidth={selectedProvince === f.id ? 2 : 0.6} role="button" tabIndex={0} aria-label={`فعالیت استان ${name}`}
           onClick={() => onProvince(f.id)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onProvince(f.id); } }}>
           <title>{name} · {items.length.toLocaleString("fa-IR")} رخداد</title>
         </path>;
       })}
+      {/* Continuous heatmap layer: soft radial glows over the neutral map, under the markers. */}
+      <g className="pointer-events-none" style={{ mixBlendMode: "screen" }}>
+        {[...markers.values()].map((e) => {
+          const [x, y] = project(e.lng, e.lat);
+          const r = 26 + e.intensity * 46;
+          return <circle key={`heat-${e.event_id}`} cx={x} cy={y} r={r} fill={`url(#heat-${e.event_id})`} />;
+        })}
+      </g>
+      {/* Border pass above the heat so province boundaries stay visible through the glow. */}
+      <g className="pointer-events-none">
+        {geometry.data?.features.map((f) => (
+          <path key={`border-${f.id}`} d={f.geometry.coordinates.map((poly) => poly.map((ring) => "M" + ring.map(([lng, lat]) => project(lng, lat).join(",")).join("L") + "Z").join("")).join("")}
+            fillRule="evenodd" className="fill-none stroke-border/80" strokeWidth={0.6} />
+        ))}
+      </g>
       {[...markers.values()].map((e) => {
         const [x, y] = project(e.lng, e.lat);
         const recent = Date.parse(e.time) >= recentStart;
@@ -51,7 +79,7 @@ export function MonitoringMap({ events, provinceNames, recentStart, selectedProv
     <div className="flex flex-wrap justify-center gap-4 border-t border-border p-2 text-[10px] text-muted-foreground" dir="rtl">
       <span className="flex items-center gap-1"><i className="size-2 rounded-full bg-success" />تازه‌ترین فعالیت</span>
       <span className="flex items-center gap-1"><i className="size-2 rounded-full bg-foreground/70" />فعالیت تاریخی</span>
-      <span className="flex items-center gap-1">تراکم <i className="h-2 w-16 rounded-full" style={{ background: "linear-gradient(to left, color-mix(in oklab, var(--color-high) 70%, var(--color-muted)), var(--color-muted))" }} /></span>
+      <span className="flex items-center gap-1">تراکم <i className="h-2 w-16 rounded-full" style={{ background: "linear-gradient(to left, #ef4444, #f97316, #eab308, #4ade80, #22d3ee)" }} /></span>
     </div>
   </div>;
 }
